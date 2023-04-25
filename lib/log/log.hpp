@@ -6,7 +6,6 @@
 #include <ostream>
 #include <mutex>
 #include <functional>
-#include <iostream>
 
 using std::string;
 using std::shared_ptr;
@@ -206,8 +205,11 @@ struct StreamLogger : public WriterLogger {
     virtual void write(const Level &level, const string &message) override;
     virtual void write(shared_ptr<const Level> level, const string &message) override;
 
+
     protected:
         shared_ptr<std::ostream> stream;
+
+        void default_greetings() const;
 };
 
 struct StandardLogger : public WriterLogger {
@@ -218,9 +220,9 @@ struct StandardLogger : public WriterLogger {
 
     virtual void write(const Level &level, const string &message) override;
     virtual void write(shared_ptr<const Level> level, const string &message) override;
-    
+
     protected:
-        static void default_greeting();
+        void default_greeting() const;
 };
 
 struct ThreadLogger : public Logger {

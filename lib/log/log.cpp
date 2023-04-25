@@ -1,6 +1,7 @@
 #include "log.hpp"
 #include <iomanip>
 #include <sstream>
+#include <iostream>
 
 using std::cout;
 using std::endl;
@@ -144,12 +145,16 @@ StreamLogger::StreamLogger(shared_ptr<std::ostream> stream) :
                 WriterLogger(shared_ptr<const LoggerDecoration>{new VoidLoggerDecoration}) {
     this->stream = stream;
     decoration = shared_ptr<const LoggerDecoration>{new VoidLoggerDecoration};
+
+    default_greetings();
 }
 
 StreamLogger::StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const LoggerDecoration> decoration) :
                 WriterLogger(decoration) {
     this->stream = stream;
     this->decoration = decoration;
+
+    default_greetings();
 }
 
 void StreamLogger::write(const Level &level, const string &message) {
@@ -164,14 +169,26 @@ void StreamLogger::write(shared_ptr<const Level> level, const string &message) {
     write(*level, message);
 }
 
+void StreamLogger::default_greetings() const {
+    Greetings greetings;
+
+    (*stream) << "["
+        << decoration->get_decoration()
+        << greetings.get_level_name() << "] Stream logger" << endl;
+}
+
 /** StandardLogger **/
 StandardLogger::StandardLogger() :
-            WriterLogger(shared_ptr<const LoggerDecoration>{new VoidLoggerDecoration}) {}
+            WriterLogger(shared_ptr<const LoggerDecoration>{new VoidLoggerDecoration}) {
+    default_greeting();
+}
 
-StandardLogger::StandardLogger(const StandardLogger &other) : WriterLogger(other) {}
+StandardLogger::StandardLogger(const StandardLogger &other) : WriterLogger(other) { }
 
 StandardLogger::StandardLogger(shared_ptr<const LoggerDecoration> decoration) :
-            WriterLogger(decoration) {}
+            WriterLogger(decoration) {
+    default_greeting();
+}
 
 void StandardLogger::write(const Level &level, const string &message) {
     if (level_filter->filter(level)) {
@@ -183,6 +200,14 @@ void StandardLogger::write(const Level &level, const string &message) {
 
 void StandardLogger::write(shared_ptr<const Level> level, const string &message) {
     write(*level, message);
+}
+
+void StandardLogger::default_greeting() const {
+    Greetings greetings;
+
+    cout << greetings.get_color() << "["
+        << decoration->get_decoration()
+        << greetings.get_level_name() << "]\033[0m Standard logger" << endl;
 }
 
 /** ThreadLogger **/
