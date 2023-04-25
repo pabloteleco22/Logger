@@ -7,6 +7,8 @@ using std::cout;
 using std::endl;
 using std::shared_ptr;
 
+using namespace logger;
+
 int main() {
     /*
     shared_ptr<const Level> level{shared_ptr<Level>(new Level)};

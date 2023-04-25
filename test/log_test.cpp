@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include "../lib/log/log.hpp"
 
+using namespace logger;
+
 TEST(LogLevelTest, LevelHierarchy) {
     Level level;
     Debug debug;

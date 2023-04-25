@@ -6,10 +6,13 @@
 #include <ostream>
 #include <mutex>
 #include <functional>
+#include <iostream>
 
 using std::string;
 using std::shared_ptr;
 
+namespace logger {
+/** Levels **/
 struct Level {
     Level() {};
     Level(const Level &other);
@@ -110,6 +113,7 @@ struct Silence : public Level {
     }
 };
 
+/** Level filters */
 struct LevelFilter {
     virtual bool filter(const Level &filter) const = 0;
 };
@@ -128,6 +132,7 @@ struct UserCustomFilter : public LevelFilter {
         std::function<bool(const Level &level)> custom_filter;
 };
 
+/** Logger decorations **/
 struct LoggerDecoration {
     LoggerDecoration() {};
     LoggerDecoration(LoggerDecoration &) {};
@@ -151,6 +156,7 @@ struct HourLoggerDecoration : public LoggerDecoration {
     virtual string get_decoration() const override;
 };
 
+/** Logger **/
 struct Logger {
     Logger();
     Logger(const Logger &other);
@@ -171,6 +177,22 @@ struct WriterLogger : public Logger {
 
     protected:
         shared_ptr<const LoggerDecoration> decoration;
+        std::function<void(shared_ptr<const LoggerDecoration>)> greet;
+
+        struct Greetings : public Level {
+            using Level::Level;
+            using Level::operator>=;
+            using Level::operator>;
+            using Level::operator<=;
+            using Level::operator<;
+            using Level::operator==;
+            using Level::operator!=;
+            Greetings() {
+                level_number = 255;
+                level_name = "Greetings";
+                color = "\033[1;104m";
+            }
+        };
 };
 
 struct StreamLogger : public WriterLogger {
@@ -186,7 +208,6 @@ struct StreamLogger : public WriterLogger {
 
     protected:
         shared_ptr<std::ostream> stream;
-        static void default_greeting();
 };
 
 struct StandardLogger : public WriterLogger {
@@ -229,4 +250,5 @@ struct BiLogger : public Logger {
     private:
         shared_ptr<Logger> logger1;
         shared_ptr<Logger> logger2;
+};
 };

@@ -1,10 +1,11 @@
 #include "log.hpp"
-#include <iostream>
 #include <iomanip>
 #include <sstream>
 
 using std::cout;
 using std::endl;
+
+using namespace logger;
 
 /** Level **/
 Level::Level(const Level &other) {
@@ -167,9 +168,7 @@ void StreamLogger::write(shared_ptr<const Level> level, const string &message) {
 StandardLogger::StandardLogger() :
             WriterLogger(shared_ptr<const LoggerDecoration>{new VoidLoggerDecoration}) {}
 
-StandardLogger::StandardLogger(const StandardLogger &other) : WriterLogger(other) {
-    decoration = other.decoration;
-}
+StandardLogger::StandardLogger(const StandardLogger &other) : WriterLogger(other) {}
 
 StandardLogger::StandardLogger(shared_ptr<const LoggerDecoration> decoration) :
             WriterLogger(decoration) {}
