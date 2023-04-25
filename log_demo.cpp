@@ -8,12 +8,20 @@ using std::endl;
 using std::shared_ptr;
 
 int main() {
+    /*
     shared_ptr<Level> level{shared_ptr<Level>(new Level)};
     shared_ptr<Level> debug{shared_ptr<Level>(new Debug)};
     shared_ptr<Level> info{shared_ptr<Level>(new Info)};
     shared_ptr<Level> warning{shared_ptr<Level>(new Warning)};
     shared_ptr<Level> error{shared_ptr<Level>(new Error)};
     shared_ptr<Level> silence{shared_ptr<Level>(new Silence)};
+    */
+    Level level;
+    Debug debug;
+    Info info;
+    Warning warning;
+    Error error;
+    Silence silence;
 
     cout << "Standard logger" << endl;
     shared_ptr<Logger> standard_logger{shared_ptr<Logger>{new StandardLogger}};
@@ -55,7 +63,7 @@ int main() {
     standard_stream_logger->write(error, "Error message");
     standard_stream_logger->write(silence, "Silence message");
 
-    shared_ptr<Logger> stream_logger{shared_ptr<Logger>{new StreamLogger{new std::ofstream{"logs/test/log_demo.log", std::ios::out}}}};
+    shared_ptr<Logger> stream_logger{shared_ptr<Logger>{new StreamLogger{shared_ptr<std::ostream>{new std::ofstream{"logs/test/log_demo.log", std::ios::out}}}}};
     stream_logger->write(info, "All levels");
     stream_logger->write(level, "Level message");
     stream_logger->write(debug, "Debug message");
@@ -75,7 +83,7 @@ int main() {
     stream_logger->write(silence, "Silence message");
 
     cout << endl << "Thread standard logger" << endl;
-    shared_ptr<Logger> thread_standard_logger{shared_ptr<Logger>{new ThreadLogger{new StandardLogger{new TimedLoggerDecoration}}}};
+    shared_ptr<Logger> thread_standard_logger{shared_ptr<Logger>{new ThreadLogger{new StandardLogger{shared_ptr<LoggerDecoration>{new TimedLoggerDecoration}}}}};
 
     cout << "All levels" << endl;
     thread_standard_logger->write(level, "Level message");
@@ -96,7 +104,8 @@ int main() {
     thread_standard_logger->write(silence, "Silence message");
 
     shared_ptr<Logger> thread_stream_logger{shared_ptr<Logger>{new ThreadLogger{new StreamLogger{
-                                                        new std::ofstream{"logs/test/thread_log_demo.log", std::ios::out}, new TimedLoggerDecoration}}}};
+                                                        shared_ptr<std::ostream>{new std::ofstream{"logs/test/thread_log_demo.log", std::ios::out}},
+                                                        shared_ptr<LoggerDecoration>{new TimedLoggerDecoration}}}}};
 
     thread_stream_logger->write(info, "All levels");
     thread_stream_logger->write(level, "Level message");

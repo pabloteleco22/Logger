@@ -11,10 +11,15 @@ using std::shared_ptr;
 
 struct Level {
     Level() {};
+    Level(Level &other);
     Level(Level *other);
     Level(shared_ptr<Level> other);
     bool operator>=(const Level &other) const;
     bool operator>(const Level &other) const;
+    bool operator<=(const Level &other) const;
+    bool operator<(const Level &other) const;
+    bool operator==(const Level &other) const;
+    bool operator!=(const Level &other) const;
     string get_color() const;
     string get_level_name() const;
     bool is_printable() const;
@@ -30,6 +35,10 @@ struct Debug : public Level {
     using Level::Level;
     using Level::operator>=;
     using Level::operator>;
+    using Level::operator<=;
+    using Level::operator<;
+    using Level::operator==;
+    using Level::operator!=;
     Debug() {
         level_number = 51;
         color = "\033[1;32m";
@@ -42,6 +51,10 @@ struct Info : public Level {
     using Level::Level;
     using Level::operator>=;
     using Level::operator>;
+    using Level::operator<=;
+    using Level::operator<;
+    using Level::operator==;
+    using Level::operator!=;
     Info() {
         level_number = 102;
         color = "\033[1;34m";
@@ -54,6 +67,10 @@ struct Warning : public Level {
     using Level::Level;
     using Level::operator>=;
     using Level::operator>;
+    using Level::operator<=;
+    using Level::operator<;
+    using Level::operator==;
+    using Level::operator!=;
     Warning() {
         level_number = 153;
         color = "\033[1;33m";
@@ -66,6 +83,10 @@ struct Error : public Level {
     using Level::Level;
     using Level::operator>=;
     using Level::operator>;
+    using Level::operator<=;
+    using Level::operator<;
+    using Level::operator==;
+    using Level::operator!=;
     Error() {
         level_number = 204;
         color = "\033[1;31m";
@@ -78,6 +99,10 @@ struct Silence : public Level {
     using Level::Level;
     using Level::operator>=;
     using Level::operator>;
+    using Level::operator<=;
+    using Level::operator<;
+    using Level::operator==;
+    using Level::operator!=;
     Silence() {
         level_number = 255;
         level_name = "Silence";
@@ -85,6 +110,8 @@ struct Silence : public Level {
 };
 
 struct LoggerDecoration {
+    LoggerDecoration() {};
+    LoggerDecoration(LoggerDecoration &) {};
     virtual string get_decoration() const = 0;
 };
 
@@ -109,75 +136,60 @@ struct Logger {
     Logger();
     Logger(Logger &other);
 
-    Logger(Logger *other);
-    Logger(shared_ptr<Logger> other);
-
     virtual ~Logger() {};
 
-    virtual void write(shared_ptr<Level> level, const string &message) = 0;
+    virtual void write(const Level &level, const string &message) = 0;
+    virtual void set_min_level(Level &level);
     virtual void set_min_level(shared_ptr<Level> level);
 
     protected:
         shared_ptr<Level> min_level;
 };
 
-struct StreamLogger : public Logger {
-    StreamLogger() = delete;
-
-    StreamLogger(shared_ptr<std::ostream> stream, const bool greet=true);
-    StreamLogger(std::ostream *stream, const bool greet=true);
-
-    StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<LoggerDecoration> decoration, const bool greet=true);
-    StreamLogger(std::ostream *stream, LoggerDecoration *decoration, const bool greet=true);
-
-    StreamLogger(StreamLogger *other, const bool greet=true);
-    StreamLogger(shared_ptr<StreamLogger> other, const bool greet=true);
-
-    virtual void write(shared_ptr<Level> level, const string &message) override;
+struct WriterLogger : public Logger {
+    WriterLogger(shared_ptr<const LoggerDecoration> decoration);
+    WriterLogger(WriterLogger &other);
 
     protected:
-        struct Greeting : public Level {
-            using Level::Level;
-            using Level::operator>=;
-            using Level::operator>;
-            Greeting() {
-                level_number = 230;
-                color = "\033[1;104m";
-                level_name = "Greeting";
-                printable = true;
-            }
-        };
-
-        shared_ptr<std::ostream> stream;
-        shared_ptr<LoggerDecoration> decoration;
-        virtual void greeting() const;
+        shared_ptr<const LoggerDecoration> decoration;
 };
 
-struct StandardLogger : public StreamLogger {
-    StandardLogger(const bool greet=true);
+struct StreamLogger : public WriterLogger {
+    StreamLogger() = delete;
+    StreamLogger(StreamLogger &other);
 
-    StandardLogger(LoggerDecoration *decoration, const bool greet=true);
-    StandardLogger(shared_ptr<LoggerDecoration> decoration, const bool greet=true);
+    StreamLogger(shared_ptr<std::ostream> stream);
 
-    StandardLogger(StreamLogger *other, const bool greet=true);
-    StandardLogger(shared_ptr<StreamLogger> other, const bool greet=true);
+    StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const LoggerDecoration> decoration);
 
-    virtual void write(shared_ptr<Level> level, const string &message) override;
+    virtual void write(const Level &level, const string &message) override;
+
+    protected:
+        shared_ptr<std::ostream> stream;
+        static void default_greeting();
+};
+
+struct StandardLogger : public WriterLogger {
+    StandardLogger();
+    StandardLogger(StandardLogger &other);
+
+    StandardLogger(shared_ptr<const LoggerDecoration> decoration);
+
+    virtual void write(const Level &level, const string &message) override;
     
     protected:
-        void greeting() const override;
+        static void default_greeting();
 };
 
 struct ThreadLogger : public Logger {
     ThreadLogger() = delete;
+    ThreadLogger(ThreadLogger &other) = delete;
 
     ThreadLogger(Logger *other);
     ThreadLogger(shared_ptr<Logger> other);
 
-    ThreadLogger(ThreadLogger *other);
-    ThreadLogger(shared_ptr<ThreadLogger> other);
-
-    void write(shared_ptr<Level> level, const string &message) override;
+    void write(const Level &level, const string &message) override;
+    void set_min_level(Level &level) override;
     void set_min_level(shared_ptr<Level> level) override;
 
     private:
@@ -186,12 +198,13 @@ struct ThreadLogger : public Logger {
 };
 
 struct BiLogger : public Logger {
+    BiLogger() = delete;
+    BiLogger(BiLogger &other) = delete;
     BiLogger(Logger *logger1, Logger *logger2);
     BiLogger(shared_ptr<Logger> logger1, shared_ptr<Logger> logger2);
-    BiLogger(BiLogger *logger);
-    BiLogger(shared_ptr<BiLogger> logger);
 
-    void write(shared_ptr<Level> level, const string &message) override;
+    void write(const Level &level, const string &message) override;
+    void set_min_level(Level &level) override;
     void set_min_level(shared_ptr<Level> level) override;
 
     private:
