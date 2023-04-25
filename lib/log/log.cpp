@@ -7,21 +7,21 @@ using std::cout;
 using std::endl;
 
 /** Level **/
-Level::Level(Level &other) {
+Level::Level(const Level &other) {
     level_number = other.level_number;
     color = other.color;
     level_name = other.level_name;
     printable = other.printable;
 }
 
-Level::Level(Level *other) {
+Level::Level(const Level *other) {
     level_number = other->level_number;
     color = other->color;
     level_name = other->level_name;
     printable = other->printable;
 }
 
-Level::Level(std::shared_ptr<Level> other) {
+Level::Level(std::shared_ptr<const Level> other) {
     level_number = other->level_number;
     color = other->level_number;
     level_name = other->level_name;
@@ -69,6 +69,16 @@ bool Level::is_printable() const {
     return printable;
 }
 
+/** DefaultFilter **/
+bool DefaultFilter::filter(const Level &filter) const {
+    return filter.is_printable();
+}
+
+/** UserCustomFilter **/
+bool UserCustomFilter::filter(const Level &filter) const {
+    return filter.is_printable() and custom_filter(filter);
+}
+
 /** VoidLoggerDecoration **/
 string VoidLoggerDecoration::get_decoration() const {
     return "";
@@ -103,19 +113,15 @@ string HourLoggerDecoration::get_decoration() const {
 
 /** Logger **/
 Logger::Logger() {
-    min_level = std::make_shared<Level>(new Level);
+    level_filter = shared_ptr<const LevelFilter>(new DefaultFilter);
 }
 
-Logger::Logger(Logger &other) {
-    min_level = other.min_level;
+Logger::Logger(const Logger &other) {
+    level_filter = other.level_filter;
 }
 
-void Logger::set_min_level(Level &level) {
-    min_level = shared_ptr<Level>{new Level{level}};
-}
-
-void Logger::set_min_level(std::shared_ptr<Level> level) {
-    min_level = level;
+void Logger::set_level_filter(std::shared_ptr<const LevelFilter> level_filter) {
+    this->level_filter = level_filter;
 }
 
 /** WriterLogger **/
@@ -123,12 +129,12 @@ WriterLogger::WriterLogger(shared_ptr<const LoggerDecoration> decoration) : Logg
     this->decoration = decoration;
 }
 
-WriterLogger::WriterLogger(WriterLogger &other) : Logger(other) {
+WriterLogger::WriterLogger(const WriterLogger &other) : Logger(other) {
     this->decoration = other.decoration;
 }
 
 /** StreamLogger **/
-StreamLogger::StreamLogger(StreamLogger &other) : WriterLogger(other) {
+StreamLogger::StreamLogger(const StreamLogger &other) : WriterLogger(other) {
     this->stream = other.stream;
     this->decoration = other.decoration;
 }
@@ -146,18 +152,22 @@ StreamLogger::StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const Log
 }
 
 void StreamLogger::write(const Level &level, const string &message) {
-    if ((level >= *min_level) and (level.is_printable())) {
+    if (level_filter->filter(level)) {
         (*stream) << "["
             << decoration->get_decoration()
             << level.get_level_name() << "] " << message << endl;
     }
 }
 
+void StreamLogger::write(shared_ptr<const Level> level, const string &message) {
+    write(*level, message);
+}
+
 /** StandardLogger **/
 StandardLogger::StandardLogger() :
             WriterLogger(shared_ptr<const LoggerDecoration>{new VoidLoggerDecoration}) {}
 
-StandardLogger::StandardLogger(StandardLogger &other) : WriterLogger(other) {
+StandardLogger::StandardLogger(const StandardLogger &other) : WriterLogger(other) {
     decoration = other.decoration;
 }
 
@@ -165,18 +175,18 @@ StandardLogger::StandardLogger(shared_ptr<const LoggerDecoration> decoration) :
             WriterLogger(decoration) {}
 
 void StandardLogger::write(const Level &level, const string &message) {
-    if ((level >= *min_level) and (level.is_printable())) {
+    if (level_filter->filter(level)) {
         cout << level.get_color() << "["
             << decoration->get_decoration()
             << level.get_level_name() << "]\033[0m " << message << endl;
     }
 }
 
-/** ThreadLogger **/
-ThreadLogger::ThreadLogger(Logger *other) : Logger() {
-    logger = std::shared_ptr<Logger>(other);
+void StandardLogger::write(shared_ptr<const Level> level, const string &message) {
+    write(*level, message);
 }
 
+/** ThreadLogger **/
 ThreadLogger::ThreadLogger(shared_ptr<Logger> other) {
     logger = other;
 }
@@ -189,28 +199,15 @@ void ThreadLogger::write(const Level &level, const string &message) {
     mut.unlock();
 }
 
-void ThreadLogger::set_min_level(Level &level) {
-    mut.lock();
-
-    logger->set_min_level(level);
-
-    mut.unlock();
+void ThreadLogger::write(shared_ptr<const Level> level, const string &message) {
+    write(*level, message);
 }
 
-void ThreadLogger::set_min_level(shared_ptr<Level> level) {
-    mut.lock();
-
-    logger->set_min_level(level);
-
-    mut.unlock();
+void ThreadLogger::set_level_filter(shared_ptr<const LevelFilter> level_filter) {
+    logger->set_level_filter(level_filter);
 }
 
 /** BiLogger **/
-BiLogger::BiLogger(Logger *logger1, Logger *logger2) {
-    this->logger1 = shared_ptr<Logger>(logger1);
-    this->logger2 = shared_ptr<Logger>(logger2);
-}
-
 BiLogger::BiLogger(shared_ptr<Logger> logger1, shared_ptr<Logger> logger2) {
     this->logger1 = logger1;
     this->logger2 = logger2;
@@ -221,12 +218,11 @@ void BiLogger::write(const Level &level, const string &message) {
     logger2->write(level, message);
 }
 
-void BiLogger::set_min_level(Level &level) {
-    logger1->set_min_level(level);
-    logger2->set_min_level(level);
+void BiLogger::write(shared_ptr<const Level> level, const string &message) {
+    write(*level, message);
 }
 
-void BiLogger::set_min_level(shared_ptr<Level> level) {
-    logger1->set_min_level(level);
-    logger2->set_min_level(level);
+void BiLogger::set_level_filter(shared_ptr<const LevelFilter> level_filter) {
+    logger1->set_level_filter(level_filter);
+    logger2->set_level_filter(level_filter);
 }

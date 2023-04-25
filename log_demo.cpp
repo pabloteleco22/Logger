@@ -9,12 +9,12 @@ using std::shared_ptr;
 
 int main() {
     /*
-    shared_ptr<Level> level{shared_ptr<Level>(new Level)};
-    shared_ptr<Level> debug{shared_ptr<Level>(new Debug)};
-    shared_ptr<Level> info{shared_ptr<Level>(new Info)};
-    shared_ptr<Level> warning{shared_ptr<Level>(new Warning)};
-    shared_ptr<Level> error{shared_ptr<Level>(new Error)};
-    shared_ptr<Level> silence{shared_ptr<Level>(new Silence)};
+    shared_ptr<const Level> level{shared_ptr<Level>(new Level)};
+    shared_ptr<const Level> debug{shared_ptr<Level>(new Debug)};
+    shared_ptr<const Level> info{shared_ptr<Level>(new Info)};
+    shared_ptr<const Level> warning{shared_ptr<Level>(new Warning)};
+    shared_ptr<const Level> error{shared_ptr<Level>(new Error)};
+    shared_ptr<const Level> silence{shared_ptr<Level>(new Silence)};
     */
     Level level;
     Debug debug;
@@ -22,6 +22,12 @@ int main() {
     Warning warning;
     Error error;
     Silence silence;
+
+    shared_ptr<UserCustomFilter> user_filter{new UserCustomFilter{
+        [&warning](const Level &level) {
+            return level == warning;
+        }
+    }};
 
     cout << "Standard logger" << endl;
     shared_ptr<Logger> standard_logger{shared_ptr<Logger>{new StandardLogger}};
@@ -33,8 +39,8 @@ int main() {
     standard_logger->write(error, "Error message");
     standard_logger->write(silence, "Silence message");
 
-    cout << endl << "Min Warning level" << endl;
-    standard_logger->set_min_level(warning);
+    cout << endl << "Custom filter" << endl;
+    standard_logger->set_level_filter(user_filter);
 
     standard_logger->write(level, "Level message");
     standard_logger->write(debug, "Debug message");
@@ -53,8 +59,8 @@ int main() {
     standard_stream_logger->write(error, "Error message");
     standard_stream_logger->write(silence, "Silence message");
 
-    cout << endl << "Min Warning level" << endl;
-    standard_stream_logger->set_min_level(warning);
+    cout << endl << "Custom filter" << endl;
+    standard_stream_logger->set_level_filter(user_filter);
 
     standard_stream_logger->write(level, "Level message");
     standard_stream_logger->write(debug, "Debug message");
@@ -72,8 +78,8 @@ int main() {
     stream_logger->write(error, "Error message");
     stream_logger->write(silence, "Silence message");
 
-    stream_logger->write(info, "Min Warning level");
-    stream_logger->set_min_level(warning);
+    stream_logger->write(info, "Custom filter");
+    stream_logger->set_level_filter(user_filter);
 
     stream_logger->write(level, "Level message");
     stream_logger->write(debug, "Debug message");
@@ -83,7 +89,7 @@ int main() {
     stream_logger->write(silence, "Silence message");
 
     cout << endl << "Thread standard logger" << endl;
-    shared_ptr<Logger> thread_standard_logger{shared_ptr<Logger>{new ThreadLogger{new StandardLogger{shared_ptr<LoggerDecoration>{new TimedLoggerDecoration}}}}};
+    shared_ptr<Logger> thread_standard_logger{shared_ptr<Logger>{new ThreadLogger{shared_ptr<Logger>{new StandardLogger{shared_ptr<LoggerDecoration>{new TimedLoggerDecoration}}}}}};
 
     cout << "All levels" << endl;
     thread_standard_logger->write(level, "Level message");
@@ -93,8 +99,8 @@ int main() {
     thread_standard_logger->write(error, "Error message");
     thread_standard_logger->write(silence, "Silence message");
 
-    cout << endl << "Min Warning level" << endl;
-    thread_standard_logger->set_min_level(warning);
+    cout << endl << "Custom filter" << endl;
+    thread_standard_logger->set_level_filter(user_filter);
 
     thread_standard_logger->write(level, "Level message");
     thread_standard_logger->write(debug, "Debug message");
@@ -103,9 +109,9 @@ int main() {
     thread_standard_logger->write(error, "Error message");
     thread_standard_logger->write(silence, "Silence message");
 
-    shared_ptr<Logger> thread_stream_logger{shared_ptr<Logger>{new ThreadLogger{new StreamLogger{
+    shared_ptr<Logger> thread_stream_logger{shared_ptr<Logger>{new ThreadLogger{shared_ptr<Logger>{new StreamLogger{
                                                         shared_ptr<std::ostream>{new std::ofstream{"logs/test/thread_log_demo.log", std::ios::out}},
-                                                        shared_ptr<LoggerDecoration>{new TimedLoggerDecoration}}}}};
+                                                        shared_ptr<LoggerDecoration>{new TimedLoggerDecoration}}}}}};
 
     thread_stream_logger->write(info, "All levels");
     thread_stream_logger->write(level, "Level message");
@@ -115,8 +121,8 @@ int main() {
     thread_stream_logger->write(error, "Error message");
     thread_stream_logger->write(silence, "Silence message");
 
-    thread_stream_logger->write(info, "Min Warning level");
-    thread_stream_logger->set_min_level(warning);
+    thread_stream_logger->write(info, "Custom filter");
+    thread_stream_logger->set_level_filter(user_filter);
 
     thread_stream_logger->write(level, "Level message");
     thread_stream_logger->write(debug, "Debug message");
@@ -127,8 +133,8 @@ int main() {
 
     cout << endl << "Bi logger" << endl;
     shared_ptr<LoggerDecoration> logger_decoration{new HourLoggerDecoration};
-    shared_ptr<Logger> bi_logger{shared_ptr<Logger>{new BiLogger{new ThreadLogger{new StandardLogger{logger_decoration}},
-                                                        new ThreadLogger{new StreamLogger{shared_ptr<std::ofstream>{new std::ofstream{"logs/test/bilog_demo.log", std::ios::out}}, logger_decoration}}}}};
+    shared_ptr<Logger> bi_logger{shared_ptr<Logger>{new BiLogger{shared_ptr<Logger>{new ThreadLogger{shared_ptr<Logger>{new StandardLogger{logger_decoration}}}},
+                                                        shared_ptr<Logger>{new ThreadLogger{shared_ptr<Logger>{new StreamLogger{shared_ptr<std::ofstream>{new std::ofstream{"logs/test/bilog_demo.log", std::ios::out}}, logger_decoration}}}}}}};
 
     bi_logger->write(info, "All levels");
     bi_logger->write(level, "Level message");
@@ -138,8 +144,8 @@ int main() {
     bi_logger->write(error, "Error message");
     bi_logger->write(silence, "Silence message");
 
-    bi_logger->write(info, "Min Warning level");
-    bi_logger->set_min_level(warning);
+    bi_logger->write(info, "Custom filter");
+    bi_logger->set_level_filter(user_filter);
 
     bi_logger->write(level, "Level message");
     bi_logger->write(debug, "Debug message");
