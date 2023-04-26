@@ -155,6 +155,28 @@ struct HourLoggerDecoration : public LoggerDecoration {
     virtual string get_decoration() const override;
 };
 
+/** Greeter **/
+struct Greeter {
+    virtual string greetings() const = 0;
+};
+
+struct DefaultGreeter : public Greeter {
+    virtual string greetings() const override;
+};
+
+struct ColorfulDefaultGreeter : public Greeter {
+    virtual string greetings() const override;
+};
+
+struct UserCustomGreeter : public Greeter {
+    UserCustomGreeter() = delete;
+    UserCustomGreeter(std::function<string()> custom_greetings);
+    virtual string greetings() const override;
+
+    private:
+        std::function<string()> custom_greetings;
+};
+
 /** Logger **/
 struct Logger {
     Logger() {};
@@ -202,14 +224,17 @@ struct StreamLogger : public WriterLogger {
 
     StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const LoggerDecoration> decoration);
 
+    StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const Greeter> greeter);
+
+    StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const LoggerDecoration> decoration, shared_ptr<const Greeter> greeter);
+
     virtual void write(const Level &level, const string &message) override;
     virtual void write(shared_ptr<const Level> level, const string &message) override;
 
 
     protected:
         shared_ptr<std::ostream> stream;
-
-        void default_greetings() const;
+        void greetings(string g) const;
 };
 
 struct StandardLogger : public WriterLogger {
@@ -217,12 +242,15 @@ struct StandardLogger : public WriterLogger {
     StandardLogger(const StandardLogger &other);
 
     StandardLogger(shared_ptr<const LoggerDecoration> decoration);
+    StandardLogger(shared_ptr<const Greeter> greeter);
+    StandardLogger(shared_ptr<const LoggerDecoration> decoration, shared_ptr<const Greeter> greeter);
 
     virtual void write(const Level &level, const string &message) override;
     virtual void write(shared_ptr<const Level> level, const string &message) override;
 
     protected:
         void default_greeting() const;
+        void greetings(string g) const;
 };
 
 struct ThreadLogger : public Logger {

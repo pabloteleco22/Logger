@@ -113,6 +113,25 @@ string HourLoggerDecoration::get_decoration() const {
     return os.str();
 }
 
+/** DefaultGreeter **/
+string DefaultGreeter::greetings() const {
+    return "[Greetings] Starting logger";
+}
+
+/** ColorfulDefaultGreeter **/
+string ColorfulDefaultGreeter::greetings() const {
+    return "\033[1;104m[Greetings]\033[0m Starting logger";
+}
+
+/** UserCustomGreeter **/
+UserCustomGreeter::UserCustomGreeter(std::function<string()> custom_greetings) {
+    this->custom_greetings = custom_greetings;
+}
+
+string UserCustomGreeter::greetings() const {
+    return custom_greetings();
+}
+
 /** WriterLogger **/
 WriterLogger::WriterLogger(shared_ptr<const LoggerDecoration> decoration) : Logger() {
     this->decoration = decoration;
@@ -137,17 +156,30 @@ StreamLogger::StreamLogger(const StreamLogger &other) : WriterLogger(other) {
 StreamLogger::StreamLogger(shared_ptr<std::ostream> stream) :
                 WriterLogger(shared_ptr<const LoggerDecoration>{new VoidLoggerDecoration}) {
     this->stream = stream;
-    decoration = shared_ptr<const LoggerDecoration>{new VoidLoggerDecoration};
 
-    default_greetings();
+    DefaultGreeter greeter;
+    greetings(greeter.greetings());
 }
 
 StreamLogger::StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const LoggerDecoration> decoration) :
                 WriterLogger(decoration) {
     this->stream = stream;
-    this->decoration = decoration;
 
-    default_greetings();
+    DefaultGreeter greeter;
+    greetings(greeter.greetings());
+}
+
+StreamLogger::StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const Greeter> greeter) : WriterLogger(shared_ptr<const LoggerDecoration>{new VoidLoggerDecoration}) {
+    this->stream = stream;
+
+    greetings(greeter->greetings());
+}
+
+StreamLogger::StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const LoggerDecoration> decoration, shared_ptr<const Greeter> greeter) :
+                WriterLogger(decoration) {
+    this->stream = stream;
+
+    greetings(greeter->greetings());
 }
 
 void StreamLogger::write(const Level &level, const string &message) {
@@ -162,25 +194,33 @@ void StreamLogger::write(shared_ptr<const Level> level, const string &message) {
     write(*level, message);
 }
 
-void StreamLogger::default_greetings() const {
-    Greetings greetings;
-
-    (*stream) << "["
-        << decoration->get_decoration()
-        << greetings.get_level_name() << "] Stream logger" << endl;
+void StreamLogger::greetings(string g) const {
+    (*stream) << g << endl;
 }
 
 /** StandardLogger **/
 StandardLogger::StandardLogger() :
             WriterLogger(shared_ptr<const LoggerDecoration>{new VoidLoggerDecoration}) {
-    default_greeting();
+    ColorfulDefaultGreeter greeter;
+
+    greetings(greeter.greetings());
 }
 
 StandardLogger::StandardLogger(const StandardLogger &other) : WriterLogger(other) { }
 
 StandardLogger::StandardLogger(shared_ptr<const LoggerDecoration> decoration) :
             WriterLogger(decoration) {
-    default_greeting();
+    ColorfulDefaultGreeter greeter;
+
+    greetings(greeter.greetings());
+}
+
+StandardLogger::StandardLogger(shared_ptr<const Greeter> greeter) : WriterLogger(shared_ptr<const LoggerDecoration>{new VoidLoggerDecoration}) {
+    greetings(greeter->greetings());
+}
+
+StandardLogger::StandardLogger(shared_ptr<const LoggerDecoration> decoration, shared_ptr<const Greeter> greeter) : WriterLogger(decoration) {
+    greetings(greeter->greetings());
 }
 
 void StandardLogger::write(const Level &level, const string &message) {
@@ -195,12 +235,8 @@ void StandardLogger::write(shared_ptr<const Level> level, const string &message)
     write(*level, message);
 }
 
-void StandardLogger::default_greeting() const {
-    Greetings greetings;
-
-    cout << greetings.get_color() << "["
-        << decoration->get_decoration()
-        << greetings.get_level_name() << "]\033[0m Standard logger" << endl;
+void StandardLogger::greetings(string g) const {
+    cout << g << endl;
 }
 
 /** ThreadLogger **/

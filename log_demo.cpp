@@ -133,9 +133,15 @@ int main() {
     thread_stream_logger->write(error, "Error message");
     thread_stream_logger->write(silence, "Silence message");
 
+    shared_ptr<UserCustomGreeter> custom_greeter{new UserCustomGreeter{[]() {
+        HourLoggerDecoration decoration;
+
+        return "\033[1;104m[" + decoration.get_decoration() + "Greetings]\033[0m Starting logger";
+    }}};
+
     cout << endl << "Bi logger" << endl;
     shared_ptr<LoggerDecoration> logger_decoration{new HourLoggerDecoration};
-    shared_ptr<Logger> bi_logger{shared_ptr<Logger>{new BiLogger{shared_ptr<Logger>{new ThreadLogger{shared_ptr<Logger>{new StandardLogger{logger_decoration}}}},
+    shared_ptr<Logger> bi_logger{shared_ptr<Logger>{new BiLogger{shared_ptr<Logger>{new ThreadLogger{shared_ptr<Logger>{new StandardLogger{logger_decoration, custom_greeter}}}},
                                                         shared_ptr<Logger>{new ThreadLogger{shared_ptr<Logger>{new StreamLogger{shared_ptr<std::ofstream>{new std::ofstream{"logs/test/bilog_demo.log", std::ios::out}}, logger_decoration}}}}}}};
 
     bi_logger->write(info, "All levels");
