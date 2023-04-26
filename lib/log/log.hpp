@@ -114,18 +114,18 @@ struct Silence : public Level {
 
 /** Level filters */
 struct LevelFilter {
-    virtual bool filter(const Level &filter) const = 0;
+    virtual bool filter(const Level &level) const = 0;
 };
 
 struct DefaultFilter : public LevelFilter {
-    bool filter(const Level &filter) const override;
+    bool filter(const Level &level) const override;
 };
 
 struct UserCustomFilter : public LevelFilter {
     UserCustomFilter(std::function<bool(const Level &level)> custom_filter) :
                                                             custom_filter{custom_filter} {}
 
-    bool filter(const Level &filter) const override;
+    bool filter(const Level &level) const override;
 
     private:
         std::function<bool(const Level &level)> custom_filter;
@@ -157,24 +157,24 @@ struct HourLoggerDecoration : public LoggerDecoration {
 
 /** Greeter **/
 struct Greeter {
-    virtual string greetings() const = 0;
+    virtual string greetings(const string &m) const = 0;
 };
 
 struct DefaultGreeter : public Greeter {
-    virtual string greetings() const override;
+    virtual string greetings(const string &m) const override;
 };
 
 struct ColorfulDefaultGreeter : public Greeter {
-    virtual string greetings() const override;
+    virtual string greetings(const string &m) const override;
 };
 
 struct UserCustomGreeter : public Greeter {
     UserCustomGreeter() = delete;
-    UserCustomGreeter(std::function<string()> custom_greetings);
-    virtual string greetings() const override;
+    UserCustomGreeter(std::function<string(const string &)> custom_greetings);
+    virtual string greetings(const string &m) const override;
 
     private:
-        std::function<string()> custom_greetings;
+        std::function<string(const string &)> custom_greetings;
 };
 
 /** Logger **/
@@ -199,21 +199,6 @@ struct WriterLogger : public Logger {
     protected:
         shared_ptr<const LoggerDecoration> decoration;
         shared_ptr<const LevelFilter> level_filter;
-
-        struct Greetings : public Level {
-            using Level::Level;
-            using Level::operator>=;
-            using Level::operator>;
-            using Level::operator<=;
-            using Level::operator<;
-            using Level::operator==;
-            using Level::operator!=;
-            Greetings() {
-                level_number = 255;
-                level_name = "Greetings";
-                color = "\033[1;104m";
-            }
-        };
 };
 
 struct StreamLogger : public WriterLogger {
