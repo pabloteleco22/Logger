@@ -6,29 +6,28 @@
 using std::cout;
 using std::endl;
 
-using namespace logger;
+using namespace simple_logger;
 
 /** Level **/
 Level::Level(const Level &other) {
     level_number = other.level_number;
     color = other.color;
     level_name = other.level_name;
-    printable = other.printable;
 }
 
 Level::Level(const Level *other) {
     level_number = other->level_number;
     color = other->color;
     level_name = other->level_name;
-    printable = other->printable;
 }
 
 Level::Level(std::shared_ptr<const Level> other) {
     level_number = other->level_number;
     color = other->level_number;
     level_name = other->level_name;
-    printable = other->printable;
 };
+
+Level::~Level() {}
 
 bool Level::operator>=(const Level &other) const {
     return level_number >= other.level_number;
@@ -67,18 +66,14 @@ string Level::get_level_name() const {
     return level_name;
 }
 
-bool Level::is_printable() const {
-    return printable;
-}
-
 /** DefaultFilter **/
-bool DefaultFilter::filter(const Level &level) const {
-    return level.is_printable();
+bool DefaultFilter::filter(const Level &) const {
+    return true;
 }
 
 /** UserCustomFilter **/
 bool UserCustomFilter::filter(const Level &level) const {
-    return level.is_printable() and custom_filter(level);
+    return custom_filter(level);
 }
 
 /** VoidLoggerDecoration **/

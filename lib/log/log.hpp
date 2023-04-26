@@ -10,13 +10,14 @@
 using std::string;
 using std::shared_ptr;
 
-namespace logger {
+namespace simple_logger {
 /** Levels **/
 struct Level {
     Level() {};
     Level(const Level &other);
     Level(const Level *other);
     Level(shared_ptr<const Level> other);
+    virtual ~Level() = 0;
     bool operator>=(const Level &other) const;
     bool operator>(const Level &other) const;
     bool operator<=(const Level &other) const;
@@ -25,13 +26,11 @@ struct Level {
     bool operator!=(const Level &other) const;
     string get_color() const;
     string get_level_name() const;
-    bool is_printable() const;
 
     protected:
         unsigned short level_number{0};
         string color{"\033[0m"};
         string level_name{"Level"};
-        bool printable{false};
 };
 
 struct Debug : public Level {
@@ -46,7 +45,6 @@ struct Debug : public Level {
         level_number = 51;
         color = "\033[1;32m";
         level_name = "Debug";
-        printable = true;
     }
 };
 
@@ -62,7 +60,6 @@ struct Info : public Level {
         level_number = 102;
         color = "\033[1;34m";
         level_name = "Info";
-        printable = true;
     }
 };
 
@@ -78,7 +75,6 @@ struct Warning : public Level {
         level_number = 153;
         color = "\033[1;33m";
         level_name = "Warn";
-        printable = true;
     }
 };
 
@@ -94,21 +90,6 @@ struct Error : public Level {
         level_number = 204;
         color = "\033[1;31m";
         level_name = "Error";
-        printable = true;
-    }
-};
-
-struct Silence : public Level {
-    using Level::Level;
-    using Level::operator>=;
-    using Level::operator>;
-    using Level::operator<=;
-    using Level::operator<;
-    using Level::operator==;
-    using Level::operator!=;
-    Silence() {
-        level_number = 255;
-        level_name = "Silence";
     }
 };
 

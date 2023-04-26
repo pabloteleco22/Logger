@@ -7,7 +7,7 @@ using std::cout;
 using std::endl;
 using std::shared_ptr;
 
-using namespace logger;
+using namespace simple_logger;
 
 int main() {
     /*
@@ -16,14 +16,11 @@ int main() {
     shared_ptr<const Level> info{shared_ptr<Level>(new Info)};
     shared_ptr<const Level> warning{shared_ptr<Level>(new Warning)};
     shared_ptr<const Level> error{shared_ptr<Level>(new Error)};
-    shared_ptr<const Level> silence{shared_ptr<Level>(new Silence)};
     */
-    Level level;
     Debug debug;
     Info info;
     Warning warning;
     Error error;
-    Silence silence;
 
     shared_ptr<UserCustomFilter> user_filter{new UserCustomFilter{
         [&warning](const Level &level) {
@@ -34,104 +31,84 @@ int main() {
     cout << "Standard logger" << endl;
     shared_ptr<Logger> standard_logger{new StandardLogger};
     cout << "All levels" << endl;
-    standard_logger->write(level, "Level message");
     standard_logger->write(debug, "Debug message");
     standard_logger->write(info, "Info message");
     standard_logger->write(warning, "Warning message");
     standard_logger->write(error, "Error message");
-    standard_logger->write(silence, "Silence message");
 
     cout << endl << "Custom filter" << endl;
     standard_logger->set_level_filter(user_filter);
 
-    standard_logger->write(level, "Level message");
     standard_logger->write(debug, "Debug message");
     standard_logger->write(info, "Info message");
     standard_logger->write(warning, "Warning message");
     standard_logger->write(error, "Error message");
-    standard_logger->write(silence, "Silence message");
 
     cout << endl << "Standard stream logger" << endl;
     shared_ptr<Logger> standard_stream_logger{new StreamLogger{shared_ptr<std::ostream>(&cout, [](void *) {})}};
     cout << "All levels" << endl;
-    standard_stream_logger->write(level, "Level message");
     standard_stream_logger->write(debug, "Debug message");
     standard_stream_logger->write(info, "Info message");
     standard_stream_logger->write(warning, "Warning message");
     standard_stream_logger->write(error, "Error message");
-    standard_stream_logger->write(silence, "Silence message");
 
     cout << endl << "Custom filter" << endl;
     standard_stream_logger->set_level_filter(user_filter);
 
-    standard_stream_logger->write(level, "Level message");
     standard_stream_logger->write(debug, "Debug message");
     standard_stream_logger->write(info, "Info message");
     standard_stream_logger->write(warning, "Warning message");
     standard_stream_logger->write(error, "Error message");
-    standard_stream_logger->write(silence, "Silence message");
 
     shared_ptr<Logger> stream_logger{new StreamLogger{shared_ptr<std::ostream>{new std::ofstream{"logs/test/log_demo.log", std::ios::out}}}};
     stream_logger->write(info, "All levels");
-    stream_logger->write(level, "Level message");
     stream_logger->write(debug, "Debug message");
     stream_logger->write(info, "Info message");
     stream_logger->write(warning, "Warning message");
     stream_logger->write(error, "Error message");
-    stream_logger->write(silence, "Silence message");
 
     stream_logger->write(info, "Custom filter");
     stream_logger->set_level_filter(user_filter);
 
-    stream_logger->write(level, "Level message");
     stream_logger->write(debug, "Debug message");
     stream_logger->write(info, "Info message");
     stream_logger->write(warning, "Warning message");
     stream_logger->write(error, "Error message");
-    stream_logger->write(silence, "Silence message");
 
     cout << endl << "Thread standard logger" << endl;
     shared_ptr<Logger> thread_standard_logger{new ThreadLogger{shared_ptr<Logger>{new StandardLogger{shared_ptr<LoggerDecoration>{new TimedLoggerDecoration}}}}};
 
     cout << "All levels" << endl;
-    thread_standard_logger->write(level, "Level message");
     thread_standard_logger->write(debug, "Debug message");
     thread_standard_logger->write(info, "Info message");
     thread_standard_logger->write(warning, "Warning message");
     thread_standard_logger->write(error, "Error message");
-    thread_standard_logger->write(silence, "Silence message");
 
     cout << endl << "Custom filter" << endl;
     thread_standard_logger->set_level_filter(user_filter);
 
-    thread_standard_logger->write(level, "Level message");
     thread_standard_logger->write(debug, "Debug message");
     thread_standard_logger->write(info, "Info message");
     thread_standard_logger->write(warning, "Warning message");
     thread_standard_logger->write(error, "Error message");
-    thread_standard_logger->write(silence, "Silence message");
 
     shared_ptr<Logger> thread_stream_logger{new ThreadLogger{shared_ptr<Logger>{new StreamLogger{
                                                         shared_ptr<std::ostream>{new std::ofstream{"logs/test/thread_log_demo.log", std::ios::out}},
                                                         shared_ptr<LoggerDecoration>{new TimedLoggerDecoration}}}}};
 
     thread_stream_logger->write(info, "All levels");
-    thread_stream_logger->write(level, "Level message");
     thread_stream_logger->write(debug, "Debug message");
     thread_stream_logger->write(info, "Info message");
     thread_stream_logger->write(warning, "Warning message");
     thread_stream_logger->write(error, "Error message");
-    thread_stream_logger->write(silence, "Silence message");
 
     thread_stream_logger->write(info, "Custom filter");
     thread_stream_logger->set_level_filter(user_filter);
 
-    thread_stream_logger->write(level, "Level message");
     thread_stream_logger->write(debug, "Debug message");
     thread_stream_logger->write(info, "Info message");
     thread_stream_logger->write(warning, "Warning message");
     thread_stream_logger->write(error, "Error message");
-    thread_stream_logger->write(silence, "Silence message");
 
     shared_ptr<UserCustomGreeter> custom_greeter{new UserCustomGreeter{[](const string &m) {
         HourLoggerDecoration decoration;
@@ -145,22 +122,18 @@ int main() {
                                                         shared_ptr<Logger>{new ThreadLogger{shared_ptr<Logger>{new StreamLogger{shared_ptr<std::ofstream>{new std::ofstream{"logs/test/bilog_demo.log", std::ios::out}}, logger_decoration}}}}}};
 
     bi_logger->write(info, "All levels");
-    bi_logger->write(level, "Level message");
     bi_logger->write(debug, "Debug message");
     bi_logger->write(info, "Info message");
     bi_logger->write(warning, "Warning message");
     bi_logger->write(error, "Error message");
-    bi_logger->write(silence, "Silence message");
 
     bi_logger->write(info, "Custom filter");
     bi_logger->set_level_filter(user_filter);
 
-    bi_logger->write(level, "Level message");
     bi_logger->write(debug, "Debug message");
     bi_logger->write(info, "Info message");
     bi_logger->write(warning, "Warning message");
     bi_logger->write(error, "Error message");
-    bi_logger->write(silence, "Silence message");
 
     return 0;
 }
