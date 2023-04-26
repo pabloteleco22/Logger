@@ -113,26 +113,19 @@ string HourLoggerDecoration::get_decoration() const {
     return os.str();
 }
 
-/** Logger **/
-Logger::Logger() {
-    level_filter = shared_ptr<const LevelFilter>(new DefaultFilter);
-}
-
-Logger::Logger(const Logger &other) {
-    level_filter = other.level_filter;
-}
-
-void Logger::set_level_filter(std::shared_ptr<const LevelFilter> level_filter) {
-    this->level_filter = level_filter;
-}
-
 /** WriterLogger **/
 WriterLogger::WriterLogger(shared_ptr<const LoggerDecoration> decoration) : Logger() {
     this->decoration = decoration;
+    level_filter = shared_ptr<const LevelFilter>(new DefaultFilter);
 }
 
 WriterLogger::WriterLogger(const WriterLogger &other) : Logger(other) {
     this->decoration = other.decoration;
+    level_filter = other.level_filter;
+}
+
+void WriterLogger::set_level_filter(shared_ptr<const LevelFilter> level_filter) {
+    this->level_filter = level_filter;
 }
 
 /** StreamLogger **/

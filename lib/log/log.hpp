@@ -157,26 +157,26 @@ struct HourLoggerDecoration : public LoggerDecoration {
 
 /** Logger **/
 struct Logger {
-    Logger();
-    Logger(const Logger &other);
+    Logger() {};
+    Logger(const Logger &) {};
 
     virtual ~Logger() {};
 
     virtual void write(const Level &level, const string &message) = 0;
     virtual void write(shared_ptr<const Level> level, const string &message) = 0;
-    virtual void set_level_filter(shared_ptr<const LevelFilter> level_filter);
+    virtual void set_level_filter(shared_ptr<const LevelFilter> level_filter) = 0;
 
     protected:
-        shared_ptr<const LevelFilter> level_filter;
 };
 
 struct WriterLogger : public Logger {
     WriterLogger(const WriterLogger &other);
     WriterLogger(shared_ptr<const LoggerDecoration> decoration);
+    virtual void set_level_filter(shared_ptr<const LevelFilter> level_filter) override;
 
     protected:
         shared_ptr<const LoggerDecoration> decoration;
-        std::function<void(shared_ptr<const LoggerDecoration>)> greet;
+        shared_ptr<const LevelFilter> level_filter;
 
         struct Greetings : public Level {
             using Level::Level;
