@@ -185,38 +185,35 @@ struct WriterLogger : public Logger {
 struct StreamLogger : public WriterLogger {
     StreamLogger() = delete;
     StreamLogger(const StreamLogger &other);
-
-    StreamLogger(shared_ptr<std::ostream> stream);
-
-    StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const LoggerDecoration> decoration);
-
-    StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const Greeter> greeter);
-
-    StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const LoggerDecoration> decoration, shared_ptr<const Greeter> greeter);
+    StreamLogger(shared_ptr<std::ostream> stream, const string &greeting_message=default_greeting_message);
+    StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const LoggerDecoration> decoration, const string &greeting_message=default_greeting_message);
+    StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const Greeter> greeter, const string &greeting_message=default_greeting_message);
+    StreamLogger(shared_ptr<std::ostream> stream, shared_ptr<const LoggerDecoration> decoration, shared_ptr<const Greeter> greeter, const string &greeting_message=default_greeting_message);
 
     virtual void write(const Level &level, const string &message) override;
     virtual void write(shared_ptr<const Level> level, const string &message) override;
-
 
     protected:
         shared_ptr<std::ostream> stream;
+
+    private:
         void greetings(string g) const;
+        static const string default_greeting_message;
 };
 
-struct StandardLogger : public WriterLogger {
-    StandardLogger();
+struct StandardLogger : public StreamLogger {
+    StandardLogger(const string &greeting_message=default_greeting_message);
     StandardLogger(const StandardLogger &other);
 
-    StandardLogger(shared_ptr<const LoggerDecoration> decoration);
-    StandardLogger(shared_ptr<const Greeter> greeter);
-    StandardLogger(shared_ptr<const LoggerDecoration> decoration, shared_ptr<const Greeter> greeter);
+    StandardLogger(shared_ptr<const LoggerDecoration> decoration, const string &greeting_message=default_greeting_message);
+    StandardLogger(shared_ptr<const Greeter> greeter, const string &greeting_message=default_greeting_message);
+    StandardLogger(shared_ptr<const LoggerDecoration> decoration, shared_ptr<const Greeter> greeter, const string &greeting_message=default_greeting_message);
 
     virtual void write(const Level &level, const string &message) override;
     virtual void write(shared_ptr<const Level> level, const string &message) override;
 
-    protected:
-        void default_greeting() const;
-        void greetings(string g) const;
+    private:
+        static const string default_greeting_message;
 };
 
 struct ThreadLogger : public Logger {
