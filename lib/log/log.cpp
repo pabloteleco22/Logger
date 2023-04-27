@@ -110,12 +110,12 @@ string HourLoggerDecoration::get_decoration() const {
 
 /** DefaultGreeter **/
 string DefaultGreeter::greetings(const string &m) const {
-    return "[Greetings] Starting " + m;
+    return "[Greetings] " + m;
 }
 
 /** ColorfulDefaultGreeter **/
 string ColorfulDefaultGreeter::greetings(const string &m) const {
-    return "\033[1;104m[Greetings]\033[0m Starting " + m;
+    return "\033[1;104m[Greetings]\033[0m " + m;
 }
 
 /** UserCustomGreeter **/
@@ -194,7 +194,7 @@ void StreamLogger::greetings(string g) const {
     (*stream) << g << endl;
 }
 
-const string StreamLogger::default_greeting_message{"stream logger"};
+const string StreamLogger::default_greeting_message{"Starting stream logger"};
 
 /** StandardLogger **/
 StandardLogger::StandardLogger(const string &greeting_message) :
@@ -223,7 +223,7 @@ void StandardLogger::write(shared_ptr<const Level> level, const string &message)
     write(*level, message);
 }
 
-const string StandardLogger::default_greeting_message{"standard logger"};
+const string StandardLogger::default_greeting_message{"Starting standard logger"};
 
 /** ThreadLogger **/
 ThreadLogger::ThreadLogger(shared_ptr<Logger> other) {

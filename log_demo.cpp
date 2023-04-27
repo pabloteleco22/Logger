@@ -113,12 +113,12 @@ int main() {
     shared_ptr<UserCustomGreeter> custom_greeter{new UserCustomGreeter{[](const string &m) {
         HourLoggerDecoration decoration;
 
-        return "\033[1;104m[" + decoration.get_decoration() + "Greetings]\033[0m Starting " + m;
+        return "\033[1;104m[" + decoration.get_decoration() + "Greetings]\033[0m " + m;
     }}};
 
     cout << endl << "Bi logger" << endl;
     shared_ptr<LoggerDecoration> logger_decoration{new HourLoggerDecoration};
-    shared_ptr<Logger> bi_logger{new BiLogger{shared_ptr<Logger>{new ThreadLogger{shared_ptr<Logger>{new StandardLogger{logger_decoration, custom_greeter}}}},
+    shared_ptr<Logger> bi_logger{new BiLogger{shared_ptr<Logger>{new ThreadLogger{shared_ptr<Logger>{new StandardLogger{logger_decoration, custom_greeter, "Starting thread standard logger"}}}},
                                                         shared_ptr<Logger>{new ThreadLogger{shared_ptr<Logger>{new StreamLogger{shared_ptr<std::ofstream>{new std::ofstream{"logs/test/bilog_demo.log", std::ios::out}}, logger_decoration}}}}}};
 
     bi_logger->write(info, "All levels");
