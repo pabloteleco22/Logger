@@ -25,6 +25,7 @@
 							"_parent": {
 								"$ref": "AAAAAAGHvhkkbs92w2w="
 							},
+							"lineColor": "#ffffff",
 							"font": "Arial;13;0",
 							"left": 8,
 							"top": 48,
@@ -8616,6 +8617,7 @@
 							"_parent": {
 								"$ref": "AAAAAAGHwj+vnVkK760="
 							},
+							"lineColor": "#ffffff",
 							"font": "Arial;13;0",
 							"left": 24,
 							"top": 32,
@@ -10087,6 +10089,7 @@
 							"_parent": {
 								"$ref": "AAAAAAGHwkm+RgVmu80="
 							},
+							"lineColor": "#ffffff",
 							"font": "Arial;13;0",
 							"left": 64,
 							"top": 48,
@@ -11115,6 +11118,7 @@
 							"_parent": {
 								"$ref": "AAAAAAGHwk2v534AXRw="
 							},
+							"lineColor": "#ffffff",
 							"font": "Arial;13;0",
 							"left": 32,
 							"top": 24,
@@ -11912,7 +11916,9 @@
 							"_parent": {
 								"$ref": "AAAAAAGHwk7a/oEZrss="
 							},
+							"lineColor": "#ffffff",
 							"font": "Arial;13;0",
+							"showShadow": false,
 							"left": 96,
 							"top": 56,
 							"width": 793,
@@ -12979,6 +12985,7 @@
 							"_parent": {
 								"$ref": "AAAAAAGHwkR0hGr3bNU="
 							},
+							"lineColor": "#ffffff",
 							"font": "Arial;13;0",
 							"left": 64,
 							"top": 40,

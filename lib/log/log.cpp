@@ -190,7 +190,7 @@ void StreamLogger::write(shared_ptr<const Level> level, const string &message) {
     write(*level, message);
 }
 
-void StreamLogger::greetings(string g) const {
+void StreamLogger::greetings(const string &g) const {
     (*stream) << g << endl;
 }
 

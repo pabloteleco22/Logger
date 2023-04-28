@@ -197,7 +197,7 @@ struct StreamLogger : public WriterLogger {
         shared_ptr<std::ostream> stream;
 
     private:
-        void greetings(string g) const;
+        void greetings(const string &g) const;
         static const string default_greeting_message;
 };
 
