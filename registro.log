@@ -1,0 +1,5 @@
+Logger empezado a las 21:30:11 
+[0.631063 | Debug] Mensaje de depuración
+[0.787429 | Info] Mensaje de información
+[0.878198 | Warn] Mensaje de aviso
+[0.954456 | Error] Mensaje de error
