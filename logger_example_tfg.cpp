@@ -1,4 +1,4 @@
-#define EX4
+#define EX3
 
 #ifdef EX1
 #include "lib/log/log.hpp"
@@ -11,12 +11,15 @@ int main() {
     Warning warning;
     Error error;
 
-    StandardLogger standard_logger;
+    StandardLoggerBuilder logger_builder;
+    Logger *standard_logger{logger_builder.build()};
 
-    standard_logger.write(debug, "Mensaje de depuración");
-    standard_logger.write(info, "Mensaje de información");
-    standard_logger.write(warning, "Mensaje de aviso");
-    standard_logger.write(error, "Mensaje de error");
+    standard_logger->write(debug, "Mensaje de depuración");
+    standard_logger->write(info, "Mensaje de información");
+    standard_logger->write(warning, "Mensaje de aviso");
+    standard_logger->write(error, "Mensaje de error");
+
+    delete standard_logger;
     
     return 0;
 }
@@ -35,16 +38,19 @@ int main() {
     Warning warning;
     Error error;
 
-    shared_ptr<LoggerDecoration> decoration{
-        new HourLoggerDecoration};
+    HourLoggerDecoration decoration;
+    std::fstream out_stream{"registro.log", ios::out};
+    StreamLoggerBuilder logger_builder{&out_stream};
+    logger_builder.set_decoration(&decoration);
 
-    StreamLogger stream_logger{shared_ptr<ostream>{
-        new fstream{"registro.log", ios::out}}, decoration};
+    Logger *stream_logger{logger_builder.build()};
 
-    stream_logger.write(debug, "Mensaje de depuración");
-    stream_logger.write(info, "Mensaje de información");
-    stream_logger.write(warning, "Mensaje de aviso");
-    stream_logger.write(error, "Mensaje de error");
+    stream_logger->write(debug, "Mensaje de depuración");
+    stream_logger->write(info, "Mensaje de información");
+    stream_logger->write(warning, "Mensaje de aviso");
+    stream_logger->write(error, "Mensaje de error");
+
+    delete stream_logger;
     
     return 0;
 }
@@ -64,43 +70,46 @@ int main() {
     Warning warning;
     Error error;
 
-    shared_ptr<LoggerDecoration> time_decoration{
-        new TimedLoggerDecoration};
+    TimedLoggerDecoration time_decoration;
 
-    shared_ptr<LoggerDecoration> hour_decoration{
-        new HourLoggerDecoration};
+    HourLoggerDecoration hour_decoration;
     
-    shared_ptr<Greeter> custom_greeter{
-        new UserCustomGreeter{
-            [&hour_decoration](const string &) {
-                string message{"Logger empezado a las " +
-                    hour_decoration->get_decoration()};
+    UserCustomGreeter custom_greeter{
+        [&hour_decoration](const string &) {
+            string message{"Logger empezado a las " +
+                hour_decoration.get_decoration()};
 
-                // Para eliminar el separador que imprime
-                // hour_decoration al final
-                message.pop_back();
-                message.pop_back();
+            // Para eliminar el separador que imprime
+            // hour_decoration al final
+            message.pop_back();
+            message.pop_back();
 
-                return message;
-            }
+            return message;
         }
     };
 
-    BiLogger bi_logger{
-        shared_ptr<Logger>{new StandardLogger{
-            hour_decoration, custom_greeter}},
-        shared_ptr<Logger>{new StreamLogger{
-            shared_ptr<ostream>{
-                new fstream{"registro.log", ios::out}},
-            time_decoration,
-            custom_greeter
-        }}
-    };
+    std::fstream out_stream{"registro.log", ios::out};
+
+    StandardLoggerBuilder standard_logger_builder;
+    StreamLoggerBuilder stream_logger_builder{&out_stream};
+
+    standard_logger_builder.set_decoration(&hour_decoration)
+                           .set_greeter(&custom_greeter);
+    
+    stream_logger_builder.set_decoration(&time_decoration)
+                         .set_greeter(&custom_greeter);
+    
+    Logger *standard_logger{standard_logger_builder.build()};
+    Logger *stream_logger{stream_logger_builder.build()};
+    BiLogger bi_logger{standard_logger, stream_logger};
 
     bi_logger.write(debug, "Mensaje de depuración");
     bi_logger.write(info, "Mensaje de información");
     bi_logger.write(warning, "Mensaje de aviso");
     bi_logger.write(error, "Mensaje de error");
+
+    delete standard_logger;
+    delete stream_logger;
     
     return 0;
 }
@@ -115,28 +124,24 @@ int main() {
     Warning warning;
     Error error;
 
-    StandardLogger standard_logger;
+    StandardLoggerBuilder logger_builder;
+    Logger *standard_logger{logger_builder.build()};
 
-    shared_ptr<LevelFilter> custom_filter{
-        new UserCustomFilter{
-            [&debug, &warning](const Level &level) {
-                return ((level == debug) || (level >= warning));
-            }
+    UserCustomFilter custom_filter{
+        [&debug, &warning](const Level &level) {
+            return ((level == debug) || (level >= warning));
         }
     };
 
-    standard_logger.set_level_filter(custom_filter);
+    standard_logger->set_level_filter(&custom_filter);
 
-    standard_logger.write(debug, "Mensaje de depuración");
-    standard_logger.write(info, "Mensaje de información");
-    standard_logger.write(warning, "Mensaje de aviso");
-    standard_logger.write(error, "Mensaje de error");
+    standard_logger->write(debug, "Mensaje de depuración");
+    standard_logger->write(info, "Mensaje de información");
+    standard_logger->write(warning, "Mensaje de aviso");
+    standard_logger->write(error, "Mensaje de error");
+
+    delete standard_logger;
     
     return 0;
 }
-#elif defined(EX5)
-#elif defined(EX6)
-#elif defined(EX7)
-#elif defined(EX8)
-#elif defined(EX9)
 #endif

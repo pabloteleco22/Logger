@@ -21,6 +21,15 @@ target_link_libraries(log_demo
     Log
 )
 
+##------------------ Logger example tfg ------------------##
+add_executable(logger_example_tfg
+    logger_example_tfg.cpp
+)
+
+target_link_libraries(logger_example_tfg
+    Log
+)
+
 #------------------- TEST -------------------#
 include(FetchContent)
 FetchContent_Declare(
