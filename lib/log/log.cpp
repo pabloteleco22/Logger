@@ -115,6 +115,25 @@ string UserCustomGreeter::greetings(const string &m) const {
     return custom_greetings(m);
 }
 
+/** LoggerStreamResponse **/
+Logger::LoggerStreamResponse::LoggerStreamResponse(Logger *logger, const Level *level) {
+    this->logger = logger;
+    this->level = level;
+}
+
+void Logger::LoggerStreamResponse::operator<<(std::ostream& (*)(std::ostream&)) {
+    flush();
+}
+
+void Logger::LoggerStreamResponse::flush() {
+    logger->write(*level, message.str());
+}
+
+/** Logger **/
+Logger::LoggerStreamResponse Logger::operator<<(const Level &level) {
+    return LoggerStreamResponse(this, &level);
+}
+
 /** WriterLogger **/
 WriterLogger::WriterLogger(const LoggerDecoration *decoration) : Logger() {
     this->decoration = decoration;

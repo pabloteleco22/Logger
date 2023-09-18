@@ -5,6 +5,7 @@
 #include <ostream>
 #include <mutex>
 #include <functional>
+#include <sstream>
 
 using std::string;
 
@@ -179,7 +180,24 @@ struct Logger {
     virtual void write(const Level &level, const string &message) = 0;
     virtual void set_level_filter(const LevelFilter *level_filter) = 0;
 
-    protected:
+    class LoggerStreamResponse {
+        private:
+            Logger *logger;
+            const Level *level;
+            std::ostringstream message;
+        
+        public:
+            LoggerStreamResponse(Logger *logger, const Level *level);
+            LoggerStreamResponse &operator<<(auto message) {
+                this->message << message;
+                
+                return *this;
+            }
+            void operator<<(std::ostream& (*func)(std::ostream&));
+            void flush();
+    };
+    
+    LoggerStreamResponse operator<<(const Level &level);
 };
 
 struct WriterLogger : public Logger {

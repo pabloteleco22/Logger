@@ -29,6 +29,12 @@ int main() {
     standard_logger->write(info, "Info message");
     standard_logger->write(warning, "Warning message");
     standard_logger->write(error, "Error message");
+    
+    cout << "operator<<" << endl;
+    (*standard_logger) << debug << "Debug message " << 2 << endl;
+    (*standard_logger) << info << "Info message " << 2 << endl;
+    (*standard_logger) << warning << "Warning message " << 2 << endl;
+    (*standard_logger) << error << "Error message " << 2 << endl;
 
     cout << endl << "Custom filter" << endl;
     standard_logger->set_level_filter(&user_filter);
@@ -37,6 +43,11 @@ int main() {
     standard_logger->write(info, "Info message");
     standard_logger->write(warning, "Warning message");
     standard_logger->write(error, "Error message");
+    cout << "operator<<" << endl;
+    (*standard_logger) << debug << "Debug message " << 2 << endl;
+    (*standard_logger) << info << "Info message " << 2 << endl;
+    (*standard_logger) << warning << "Warning message " << 2 << endl;
+    (*standard_logger) << error << "Error message " << 2 << endl;
 
     delete standard_logger;
 
@@ -49,6 +60,11 @@ int main() {
     standard_stream_logger->write(info, "Info message");
     standard_stream_logger->write(warning, "Warning message");
     standard_stream_logger->write(error, "Error message");
+    cout << "operator<<" << endl;
+    (*standard_stream_logger) << debug << "Debug message " << 2 << endl;
+    (*standard_stream_logger) << info << "Info message " << 2 << endl;
+    (*standard_stream_logger) << warning << "Warning message " << 2 << endl;
+    (*standard_stream_logger) << error << "Error message " << 2 << endl;
 
     cout << endl << "Custom filter" << endl;
     standard_stream_logger->set_level_filter(&user_filter);
@@ -57,6 +73,12 @@ int main() {
     standard_stream_logger->write(info, "Info message");
     standard_stream_logger->write(warning, "Warning message");
     standard_stream_logger->write(error, "Error message");
+
+    cout << "operator<<" << endl;
+    (*standard_stream_logger) << debug << "Debug message " << 2 << endl;
+    (*standard_stream_logger) << info << "Info message " << 2 << endl;
+    (*standard_stream_logger) << warning << "Warning message " << 2 << endl;
+    (*standard_stream_logger) << error << "Error message " << 2 << endl;
 
     delete standard_stream_logger;
 
@@ -163,6 +185,11 @@ int main() {
     bi_logger.write(info, "Info message");
     bi_logger.write(warning, "Warning message");
     bi_logger.write(error, "Error message");
+    bi_logger << info << "operator<<" << endl;
+    bi_logger << debug << "Debug message " << 2 << endl;
+    bi_logger << info << "Info message " << 2 << endl;
+    bi_logger << warning << "Warning message " << 2 << endl;
+    bi_logger << error << "Error message " << 2 << endl;
 
     bi_logger.write(info, "Custom filter");
     bi_logger.set_level_filter(&user_filter);
@@ -171,6 +198,12 @@ int main() {
     bi_logger.write(info, "Info message");
     bi_logger.write(warning, "Warning message");
     bi_logger.write(error, "Error message");
+
+    bi_logger << info << "operator<<" << endl;
+    bi_logger << debug << "Debug message " << 2 << endl;
+    bi_logger << info << "Info message " << 2 << endl;
+    bi_logger << warning << "Warning message " << 2 << endl;
+    bi_logger << error << "Error message " << 2 << endl;
 
     delete std_logger;
     delete str_logger;
