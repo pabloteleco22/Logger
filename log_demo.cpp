@@ -1,4 +1,5 @@
-#include "lib/log/log.hpp"
+//#include "lib/log/log.hpp"
+#include "lib/log/loggerbuilder.hpp"
 
 #include <iostream>
 #include <fstream>

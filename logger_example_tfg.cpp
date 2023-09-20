@@ -1,7 +1,7 @@
 #define EX3
 
 #ifdef EX1
-#include "lib/log/log.hpp"
+#include "lib/log/loggerbuilder.hpp"
 
 int main() {
     using namespace simple_logger;
@@ -24,7 +24,7 @@ int main() {
     return 0;
 }
 #elif defined(EX2)
-#include "lib/log/log.hpp"
+#include "lib/log/loggerbuilder.hpp"
 #include <fstream>
 
 int main() {
@@ -55,7 +55,7 @@ int main() {
     return 0;
 }
 #elif defined(EX3)
-#include "lib/log/log.hpp"
+#include "lib/log/loggerbuilder.hpp"
 #include <fstream>
 #include <string>
 
@@ -114,7 +114,7 @@ int main() {
     return 0;
 }
 #elif defined(EX4)
-#include "lib/log/log.hpp"
+#include "lib/log/loggerbuilder.hpp"
 
 int main() {
     using namespace simple_logger;

@@ -21,7 +21,7 @@ add_executable(log_demo
 )
 
 target_link_libraries(log_demo
-    Log
+    LoggerBuilder
 )
 
 ##------------------ Logger example tfg ------------------##
@@ -30,7 +30,7 @@ add_executable(logger_example_tfg
 )
 
 target_link_libraries(logger_example_tfg
-    Log
+    LoggerBuilder
 )
 
 #------------------- TEST -------------------#
@@ -52,7 +52,7 @@ add_executable(log_test
 
 target_link_libraries(log_test
     GTest::gtest_main
-    Log
+    Level
 )
 
 include(GoogleTest)
