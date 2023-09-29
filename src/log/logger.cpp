@@ -55,9 +55,16 @@ StreamLogger::StreamLogger(std::ostream *stream, const LoggerDecoration *decorat
 
 void StreamLogger::write(const Level &level, const string &message) const {
     if (level_filter->filter(level)) {
-        (*stream) << "["
-            << decoration->get_decoration()
-            << level.get_level_name() << "] " << message << endl;
+        string decoration_str{decoration->get_decoration()};
+        
+        if (decoration_str == "") {
+            (*stream) << "["
+                << level.get_level_name() << "] " << message << endl;
+        } else {
+            (*stream) << "["
+                << decoration_str << " | "
+                << level.get_level_name() << "] " << message << endl;
+        }
     }
 }
 
@@ -75,9 +82,17 @@ StandardLogger::StandardLogger(const LoggerDecoration *decoration, const Greeter
 
 void StandardLogger::write(const Level &level, const string &message) const {
     if (level_filter->filter(level)) {
-        (*stream) << level.get_color() << "["
-            << decoration->get_decoration()
-            << level.get_level_name() << "]\033[0m " << message << endl;
+        string decoration_str{decoration->get_decoration()};
+
+        
+        if (decoration_str == "") {
+            (*stream) << level.get_color() << "["
+                << level.get_level_name() << "]\033[0m " << message << endl;
+        } else {
+            (*stream) << level.get_color() << "["
+                << decoration->get_decoration() << " | "
+                << level.get_level_name() << "]\033[0m " << message << endl;
+        }
     }
 }
 

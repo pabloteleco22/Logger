@@ -106,9 +106,18 @@ int main() {
     delete stream_logger;
 
     cout << endl << "Thread standard logger" << endl;
+
+    std::vector<const LoggerDecoration*> decoration_list;
     TimedLoggerDecoration timed_logger_decoration;
+    HourLoggerDecoration hour_logger_decoration;
+
+    decoration_list.push_back(&timed_logger_decoration);
+    decoration_list.push_back(&hour_logger_decoration);
+    
+    DecorationBundler decoration_bundler{decoration_list};
+
     standard_logger_builder.reset_config()
-                           .set_decoration(&timed_logger_decoration);
+                           .set_decoration(&decoration_bundler);
     Logger *thread_standard_logger{standard_logger_builder.build()};
     ThreadLogger thread_logger{thread_standard_logger};
 
@@ -159,7 +168,7 @@ int main() {
     UserCustomGreeter custom_greeter{[](const string &m) {
         HourLoggerDecoration decoration;
 
-        return "\033[1;104m[" + decoration.get_decoration() + "Greetings]\033[0m " + m;
+        return "\033[1;104m[" + decoration.get_decoration() + " | Greetings]\033[0m " + m;
     }};
 
     HourLoggerDecoration logger_decoration;
@@ -209,18 +218,6 @@ int main() {
 
     delete std_logger;
     delete str_logger;
-    
-    std::vector<LoggerDecoration*> decoration_list;
-    
-    HourLoggerDecoration hour_logger_decoration;
-
-    decoration_list.push_back(&timed_logger_decoration);
-    decoration_list.push_back(&hour_logger_decoration);
-    
-    DecorationBundler decoration_bundler{decoration_list};
-    
-    cout << "Decoration bundler" << endl;
-    cout << decoration_bundler.get_decoration() << endl;
 
     return 0;
 }

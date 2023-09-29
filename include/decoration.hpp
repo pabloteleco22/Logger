@@ -18,12 +18,22 @@ struct VoidLoggerDecoration : public LoggerDecoration {
 };
 
 struct DecorationBundler : public LoggerDecoration {
-    DecorationBundler(std::vector<LoggerDecoration*> &decoration_list, const string separator = " | ");
+    DecorationBundler(std::vector<const LoggerDecoration*> &decoration_list, const string separator = " | ");
     virtual string get_decoration() const override;
     
     private:
-        std::vector<LoggerDecoration*> *decoration_list;
+        std::vector<const LoggerDecoration*> *decoration_list;
         const string separator;
+};
+
+struct PackDecoration : public LoggerDecoration {
+    PackDecoration(const LoggerDecoration &logger_decoration, const string begin = "[", const string end = "]");
+    virtual string get_decoration() const override;
+
+    private:
+        const LoggerDecoration *logger_decoration;
+        const string begin;
+        const string end;
 };
 
 struct TimedLoggerDecoration : public LoggerDecoration {
