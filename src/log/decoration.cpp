@@ -7,6 +7,20 @@ string VoidLoggerDecoration::get_decoration() const {
     return "";
 }
 
+DecorationBundler::DecorationBundler(std::vector<LoggerDecoration*> &decoration_list, const string separator) : separator{separator} {
+    this->decoration_list = &decoration_list;
+}
+
+string DecorationBundler::get_decoration() const {
+    string decoration = "";
+    
+    for (auto log_dec : (*decoration_list)) {
+        decoration += log_dec->get_decoration();
+    }
+    
+    return decoration;
+}
+
 /** TimedLoggerDecoration **/
 TimedLoggerDecoration::TimedLoggerDecoration() : LoggerDecoration() {
     start_time = std::chrono::steady_clock::now();
