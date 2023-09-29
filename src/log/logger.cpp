@@ -7,7 +7,7 @@ using std::endl;
 using namespace simple_logger;
 
 /** LoggerStreamResponse **/
-Logger::LoggerStreamResponse::LoggerStreamResponse(Logger *logger, const Level *level) {
+Logger::LoggerStreamResponse::LoggerStreamResponse(const Logger *logger, const Level *level) {
     this->logger = logger;
     this->level = level;
 }
@@ -53,7 +53,7 @@ StreamLogger::StreamLogger(std::ostream *stream, const LoggerDecoration *decorat
     greetings(greeter->greetings(greeting_message));
 }
 
-void StreamLogger::write(const Level &level, const string &message) {
+void StreamLogger::write(const Level &level, const string &message) const {
     if (level_filter->filter(level)) {
         (*stream) << "["
             << decoration->get_decoration()
@@ -73,7 +73,7 @@ StandardLogger::StandardLogger(const StandardLogger &other) : StreamLogger(other
 StandardLogger::StandardLogger(const LoggerDecoration *decoration, const Greeter *greeter, const string &greeting_message) :
             StreamLogger(&cout, decoration, greeter, greeting_message) {}
 
-void StandardLogger::write(const Level &level, const string &message) {
+void StandardLogger::write(const Level &level, const string &message) const {
     if (level_filter->filter(level)) {
         (*stream) << level.get_color() << "["
             << decoration->get_decoration()
@@ -88,7 +88,7 @@ ThreadLogger::ThreadLogger(Logger *other) {
     logger = other;
 }
 
-void ThreadLogger::write(const Level &level, const string &message) {
+void ThreadLogger::write(const Level &level, const string &message) const {
     mut.lock();
 
     logger->write(level, message);
@@ -110,7 +110,7 @@ BiLogger::BiLogger(Logger *logger1, Logger *logger2) {
     this->logger2 = logger2;
 }
 
-void BiLogger::write(const Level &level, const string &message) {
+void BiLogger::write(const Level &level, const string &message) const {
     logger1->write(level, message);
     logger2->write(level, message);
 }

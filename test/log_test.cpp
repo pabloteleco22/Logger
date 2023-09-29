@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include "../lib/log/level.hpp"
+#include "level.hpp"
 
 using namespace simple_logger;
 

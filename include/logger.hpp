@@ -15,17 +15,17 @@ struct Logger {
 
     virtual ~Logger() {};
 
-    virtual void write(const Level &level, const string &message) = 0;
+    virtual void write(const Level &level, const string &message) const = 0;
     virtual void set_level_filter(const LevelFilter *level_filter) = 0;
 
     class LoggerStreamResponse {
         private:
-            Logger *logger;
+            const Logger *logger;
             const Level *level;
             std::ostringstream message;
         
         public:
-            LoggerStreamResponse(Logger *logger, const Level *level);
+            LoggerStreamResponse(const Logger *logger, const Level *level);
             LoggerStreamResponse &operator<<(auto message) {
                 this->message << message;
                 
@@ -53,7 +53,7 @@ struct StreamLogger : public WriterLogger {
     StreamLogger(const StreamLogger &other);
     StreamLogger(std::ostream *stream, const LoggerDecoration *decoration, const Greeter *greeter, const string &greeting_message=default_greeting_message);
 
-    virtual void write(const Level &level, const string &message) override;
+    virtual void write(const Level &level, const string &message) const override;
 
     static const string default_greeting_message;
 
@@ -69,7 +69,7 @@ struct StandardLogger : public StreamLogger {
 
     StandardLogger(const LoggerDecoration *decoration, const Greeter *greeter, const string &greeting_message=default_greeting_message);
 
-    virtual void write(const Level &level, const string &message) override;
+    virtual void write(const Level &level, const string &message) const override;
 
     static const string default_greeting_message;
 };
@@ -80,12 +80,12 @@ struct ThreadLogger : public Logger {
 
     ThreadLogger(Logger *other);
 
-    void write(const Level &level, const string &message) override;
+    void write(const Level &level, const string &message) const override;
     void set_level_filter(const LevelFilter *level_filter) override;
     void set_logger(Logger *logger);
 
     private:
-        std::mutex mut;
+        mutable std::mutex mut;
         Logger *logger;
 };
 
@@ -94,7 +94,7 @@ struct BiLogger : public Logger {
     BiLogger(const BiLogger &other) = delete;
     BiLogger(Logger *logger1, Logger *logger2);
 
-    void write(const Level &level, const string &message) override;
+    void write(const Level &level, const string &message) const override;
     void set_level_filter(const LevelFilter *level_filter) override;
     void set_first_logger(Logger *logger);
     void set_second_logger(Logger *logger);

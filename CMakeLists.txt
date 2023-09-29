@@ -13,7 +13,19 @@ cmake_policy(SET CMP0135 NEW)
 # Enable strict handling of warnings
 add_definitions("-Wall -Wextra")
 
-add_subdirectory(lib/log)
+add_library(Logger
+    src/log/level.cpp
+    src/log/levelfilter.cpp
+    src/log/decoration.cpp
+    src/log/greeter.cpp
+    src/log/logger.cpp
+    src/log/loggerbuilder.cpp
+)
+
+target_include_directories(Logger
+    PUBLIC
+        include
+)
 
 ##------------------ Log demo ------------------##
 add_executable(log_demo
@@ -21,7 +33,7 @@ add_executable(log_demo
 )
 
 target_link_libraries(log_demo
-    LoggerBuilder
+    Logger
 )
 
 ##------------------ Logger example tfg ------------------##
@@ -30,7 +42,7 @@ add_executable(logger_example_tfg
 )
 
 target_link_libraries(logger_example_tfg
-    LoggerBuilder
+    Logger
 )
 
 #------------------- TEST -------------------#
@@ -52,7 +64,7 @@ add_executable(log_test
 
 target_link_libraries(log_test
     GTest::gtest_main
-    Level
+    Logger
 )
 
 include(GoogleTest)

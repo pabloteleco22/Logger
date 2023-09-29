@@ -1,8 +1,9 @@
 //#include "lib/log/log.hpp"
-#include "lib/log/loggerbuilder.hpp"
+#include "loggerbuilder.hpp"
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 using std::cout;
 using std::endl;
@@ -208,6 +209,18 @@ int main() {
 
     delete std_logger;
     delete str_logger;
+    
+    std::vector<LoggerDecoration*> decoration_list;
+    
+    HourLoggerDecoration hour_logger_decoration;
+
+    decoration_list.push_back(&timed_logger_decoration);
+    decoration_list.push_back(&hour_logger_decoration);
+    
+    DecorationBundler decoration_bundler{decoration_list};
+    
+    cout << "Decoration bundler" << endl;
+    cout << decoration_bundler.get_decoration() << endl;
 
     return 0;
 }

@@ -2,6 +2,7 @@
 
 #include <string>
 #include <chrono>
+#include <vector>
 
 using std::string;
 
@@ -14,6 +15,15 @@ struct LoggerDecoration {
 
 struct VoidLoggerDecoration : public LoggerDecoration {
     virtual string get_decoration() const override;
+};
+
+struct DecorationBundler : public LoggerDecoration {
+    DecorationBundler(std::vector<LoggerDecoration*> &decoration_list, const string separator = " | ");
+    virtual string get_decoration() const override;
+    
+    private:
+        std::vector<LoggerDecoration*> *decoration_list;
+        const string separator;
 };
 
 struct TimedLoggerDecoration : public LoggerDecoration {
