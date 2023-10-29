@@ -1,5 +1,7 @@
 #include "decoration.hpp"
 
+#include <iomanip>
+
 using namespace simple_logger;
 
 /** VoidLoggerDecoration **/
@@ -46,7 +48,7 @@ TimedLoggerDecoration::TimedLoggerDecoration(TimedLoggerDecoration &other) : Log
 
 string TimedLoggerDecoration::get_decoration() const {
     std::ostringstream os;
-    os << std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start_time);
+    os << std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start_time).count();
     
     return os.str();
 }
