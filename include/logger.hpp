@@ -35,7 +35,7 @@ struct Logger {
             void flush();
     };
     
-    LoggerStreamResponse operator<<(const Level &level);
+    LoggerStreamResponse operator<<(const Level &level) const;
 };
 
 struct WriterLogger : public Logger {

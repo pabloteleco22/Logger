@@ -21,7 +21,7 @@ void Logger::LoggerStreamResponse::flush() {
 }
 
 /** Logger **/
-Logger::LoggerStreamResponse Logger::operator<<(const Level &level) {
+Logger::LoggerStreamResponse Logger::operator<<(const Level &level) const {
     return LoggerStreamResponse(this, &level);
 }
 
