@@ -11,7 +11,7 @@ using std::cout;
 using std::endl;
 using lsr = Logger::LoggerStreamResponse;
 
-lsr::End end = lsr::end;
+lsr::End end;
 
 int main() {
     Debug debug;
