@@ -1,12 +1,16 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <level.hpp>
+#include <logger.hpp>
 #include <mocklogger.hpp>
 #include <iostream>
+#include <mutex>
 
 using namespace simple_logger;
 
 using ::testing::_;
+using ::testing::NiceMock;
+
+Logger::LoggerStreamResponse::End end;
 
 TEST(LogLevelTest, LevelHierarchy) {
     Debug debug;
@@ -27,7 +31,7 @@ TEST(LoggerStreamResponseTests, HappyPathWithEmptyMessage) {
 
     Logger::LoggerStreamResponse lsr = logger << level;
 
-    lsr << Logger::LoggerStreamResponse::end;
+    lsr << end;
 }
 
 TEST(LoggerStreamResponseTests, HappyPathWithNotEmptyMessage) {
@@ -39,7 +43,7 @@ TEST(LoggerStreamResponseTests, HappyPathWithNotEmptyMessage) {
     Logger::LoggerStreamResponse lsr = logger << level;
 
     lsr << "Hello" << 2 << std::endl << std::boolalpha << true;
-    lsr << Logger::LoggerStreamResponse::end;
+    lsr << end;
 }
 
 TEST(LoggerStreamResponseTests, DontWriteAnyMessageOnEndlReception) {
@@ -51,4 +55,28 @@ TEST(LoggerStreamResponseTests, DontWriteAnyMessageOnEndlReception) {
     Logger::LoggerStreamResponse lsr = logger << level;
 
     lsr << std::endl;
+}
+
+TEST(ThreadLoggerTests, CallLogger) {
+    MockLogger logger;
+    Debug level;
+
+    EXPECT_CALL(logger, write(_, _)).Times(1);
+
+    ThreadLogger threadLogger(&logger);
+
+    threadLogger << level << end;
+}
+
+TEST(BiLoggerTests, CallTwoLoggers) {
+    MockLogger logger1;
+    MockLogger logger2;
+    Debug level;
+
+    EXPECT_CALL(logger1, write(_, _)).Times(1);
+    EXPECT_CALL(logger2, write(_, _)).Times(1);
+
+    BiLogger biLogger(&logger1, &logger2);
+
+    biLogger << level << end;
 }
