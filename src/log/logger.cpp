@@ -12,7 +12,13 @@ Logger::LoggerStreamResponse::LoggerStreamResponse(const Logger *logger, const L
     this->level = level;
 }
 
-void Logger::LoggerStreamResponse::operator<<(std::ostream& (*)(std::ostream&)) {
+Logger::LoggerStreamResponse &Logger::LoggerStreamResponse::operator<<(std::ostream& (*stream_modificator)(std::ostream&)) {
+    this->message << stream_modificator;
+
+    return *this;
+}
+
+void Logger::LoggerStreamResponse::operator<<(Logger::LoggerStreamResponse::End) {
     flush();
 }
 

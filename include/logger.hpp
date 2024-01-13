@@ -31,7 +31,13 @@ struct Logger {
                 
                 return *this;
             }
-            void operator<<(std::ostream& (*func)(std::ostream&));
+
+            class End {};
+
+            static End end;
+
+            LoggerStreamResponse &operator<<(std::ostream& (*func)(std::ostream&));
+            void operator<<(End);
             void flush();
     };
     
