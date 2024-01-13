@@ -62,8 +62,14 @@ add_executable(log_test
     test/log_test.cpp
 )
 
+target_include_directories(log_test
+    PUBLIC
+        test/mocks
+)
+
 target_link_libraries(log_test
     GTest::gtest_main
+    GTest::gmock
     Logger
 )
 
