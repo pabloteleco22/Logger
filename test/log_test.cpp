@@ -1,9 +1,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <iostream>
 #include <logger.hpp>
 #include <mocklogger.hpp>
-#include <iostream>
-#include <mutex>
 
 using namespace simple_logger;
 

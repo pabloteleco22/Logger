@@ -23,7 +23,7 @@ struct UserCustomGreeter : public Greeter {
     UserCustomGreeter(std::function<string(const string &)> custom_greetings);
     virtual string greetings(const string &m) const override;
 
-    private:
-        std::function<string(const string &)> custom_greetings;
+  private:
+    std::function<string(const string &)> custom_greetings;
 };
-};
+}; // namespace simple_logger

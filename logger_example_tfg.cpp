@@ -1,7 +1,7 @@
-#define EX3
+#define EX4
 
 #ifdef EX1
-#include "loggerbuilder.hpp"
+#    include "loggerbuilder.hpp"
 
 int main() {
     using namespace simple_logger;
@@ -20,18 +20,18 @@ int main() {
     standard_logger->write(error, "Mensaje de error");
 
     delete standard_logger;
-    
+
     return 0;
 }
 #elif defined(EX2)
-#include "loggerbuilder.hpp"
-#include <fstream>
+#    include "loggerbuilder.hpp"
+#    include <fstream>
 
 int main() {
     using namespace simple_logger;
-    using std::ostream;
     using std::fstream;
     using std::ios;
+    using std::ostream;
 
     Debug debug;
     Info info;
@@ -51,19 +51,19 @@ int main() {
     stream_logger->write(error, "Mensaje de error");
 
     delete stream_logger;
-    
+
     return 0;
 }
 #elif defined(EX3)
-#include "loggerbuilder.hpp"
-#include <fstream>
-#include <string>
+#    include "loggerbuilder.hpp"
+#    include <fstream>
+#    include <string>
 
 int main() {
     using namespace simple_logger;
-    using std::ostream;
     using std::fstream;
     using std::ios;
+    using std::ostream;
 
     Debug debug;
     Info info;
@@ -73,20 +73,18 @@ int main() {
     TimedLoggerDecoration time_decoration;
 
     HourLoggerDecoration hour_decoration;
-    
-    UserCustomGreeter custom_greeter{
-        [&hour_decoration](const string &) {
-            string message{"Logger empezado a las " +
-                hour_decoration.get_decoration()};
 
-            // Para eliminar el separador que imprime
-            // hour_decoration al final
-            message.pop_back();
-            message.pop_back();
+    UserCustomGreeter custom_greeter{[&hour_decoration](const string &) {
+        string message{"Logger empezado a las " +
+                       hour_decoration.get_decoration()};
 
-            return message;
-        }
-    };
+        // Para eliminar el separador que imprime
+        // hour_decoration al final
+        message.pop_back();
+        message.pop_back();
+
+        return message;
+    }};
 
     std::fstream out_stream{"registro.log", ios::out};
 
@@ -94,11 +92,11 @@ int main() {
     StreamLoggerBuilder stream_logger_builder{&out_stream};
 
     standard_logger_builder.set_decoration(&hour_decoration)
-                           .set_greeter(&custom_greeter);
-    
+        .set_greeter(&custom_greeter);
+
     stream_logger_builder.set_decoration(&time_decoration)
-                         .set_greeter(&custom_greeter);
-    
+        .set_greeter(&custom_greeter);
+
     Logger *standard_logger{standard_logger_builder.build()};
     Logger *stream_logger{stream_logger_builder.build()};
     BiLogger bi_logger{standard_logger, stream_logger};
@@ -110,11 +108,11 @@ int main() {
 
     delete standard_logger;
     delete stream_logger;
-    
+
     return 0;
 }
 #elif defined(EX4)
-#include "loggerbuilder.hpp"
+#    include "loggerbuilder.hpp"
 
 int main() {
     using namespace simple_logger;
@@ -127,11 +125,9 @@ int main() {
     StandardLoggerBuilder logger_builder;
     Logger *standard_logger{logger_builder.build()};
 
-    UserCustomFilter custom_filter{
-        [&debug, &warning](const Level &level) {
-            return ((level == debug) || (level >= warning));
-        }
-    };
+    UserCustomFilter custom_filter{[&debug, &warning](const Level &level) {
+        return ((level == debug) || (level >= warning));
+    }};
 
     standard_logger->set_level_filter(&custom_filter);
 
@@ -141,7 +137,7 @@ int main() {
     standard_logger->write(error, "Mensaje de error");
 
     delete standard_logger;
-    
+
     return 0;
 }
 #endif

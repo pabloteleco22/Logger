@@ -1,46 +1,43 @@
 #pragma once
 
-#include "level.hpp"
-#include "levelfilter.hpp"
 #include "decoration.hpp"
 #include "greeter.hpp"
+#include "level.hpp"
+#include "levelfilter.hpp"
 
-#include <sstream>
 #include <mutex>
+#include <sstream>
 
 namespace simple_logger {
 struct Logger {
-    Logger() {};
-    Logger(const Logger &) {};
-
     virtual ~Logger() {};
 
     virtual void write(const Level &level, const string &message) const = 0;
     virtual void set_level_filter(const LevelFilter *level_filter) = 0;
 
     class LoggerStreamResponse {
-        private:
-            const Logger *logger;
-            const Level *level;
-            std::ostringstream message;
-        
-        public:
-            LoggerStreamResponse(const Logger *logger, const Level *level);
-            LoggerStreamResponse &operator<<(auto message) {
-                this->message << message;
-                
-                return *this;
-            }
+      private:
+        const Logger *logger;
+        const Level *level;
+        std::ostringstream message;
 
-            class End {};
+      public:
+        LoggerStreamResponse(const Logger *logger, const Level *level);
+        LoggerStreamResponse &operator<<(auto message) {
+            this->message << message;
 
-            static End end;
+            return *this;
+        }
 
-            LoggerStreamResponse &operator<<(std::ostream& (*func)(std::ostream&));
-            void operator<<(End);
-            void flush();
+        class End {};
+
+        static End end;
+
+        LoggerStreamResponse &operator<<(std::ostream &(*func)(std::ostream &));
+        void operator<<(End);
+        void flush();
     };
-    
+
     LoggerStreamResponse operator<<(const Level &level) const;
 };
 
@@ -49,33 +46,38 @@ struct WriterLogger : public Logger {
     WriterLogger(const LoggerDecoration *decoration);
     virtual void set_level_filter(const LevelFilter *level_filter) override;
 
-    protected:
-        const LoggerDecoration *decoration;
-        const LevelFilter *level_filter;
+  protected:
+    const LoggerDecoration *decoration;
+    const LevelFilter *level_filter;
 };
 
 struct StreamLogger : public WriterLogger {
     StreamLogger() = delete;
     StreamLogger(const StreamLogger &other);
-    StreamLogger(std::ostream *stream, const LoggerDecoration *decoration, const Greeter *greeter, const string &greeting_message=default_greeting_message);
+    StreamLogger(std::ostream *stream, const LoggerDecoration *decoration,
+                 const Greeter *greeter,
+                 const string &greeting_message = default_greeting_message);
 
-    virtual void write(const Level &level, const string &message) const override;
+    virtual void write(const Level &level,
+                       const string &message) const override;
 
     static const string default_greeting_message;
 
-    protected:
-        std::ostream *stream;
+  protected:
+    std::ostream *stream;
 
-    private:
-        void greetings(const string &g) const;
+  private:
+    void greetings(const string &g) const;
 };
 
 struct StandardLogger : public StreamLogger {
     StandardLogger(const StandardLogger &other);
 
-    StandardLogger(const LoggerDecoration *decoration, const Greeter *greeter, const string &greeting_message=default_greeting_message);
+    StandardLogger(const LoggerDecoration *decoration, const Greeter *greeter,
+                   const string &greeting_message = default_greeting_message);
 
-    virtual void write(const Level &level, const string &message) const override;
+    virtual void write(const Level &level,
+                       const string &message) const override;
 
     static const string default_greeting_message;
 };
@@ -90,9 +92,9 @@ struct ThreadLogger : public Logger {
     void set_level_filter(const LevelFilter *level_filter) override;
     void set_logger(Logger *logger);
 
-    private:
-        mutable std::mutex mut;
-        Logger *logger;
+  private:
+    mutable std::mutex mut;
+    Logger *logger;
 };
 
 struct BiLogger : public Logger {
@@ -105,8 +107,8 @@ struct BiLogger : public Logger {
     void set_first_logger(Logger *logger);
     void set_second_logger(Logger *logger);
 
-    private:
-        Logger *logger1;
-        Logger *logger2;
+  private:
+    Logger *logger1;
+    Logger *logger2;
 };
-};
+}; // namespace simple_logger

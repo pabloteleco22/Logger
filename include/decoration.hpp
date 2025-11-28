@@ -1,7 +1,7 @@
 #pragma once
 
-#include <string>
 #include <chrono>
+#include <string>
 #include <vector>
 
 using std::string;
@@ -18,22 +18,24 @@ struct VoidLoggerDecoration : public LoggerDecoration {
 };
 
 struct DecorationBundler : public LoggerDecoration {
-    DecorationBundler(std::vector<const LoggerDecoration*> &decoration_list, const string separator = " | ");
+    DecorationBundler(std::vector<const LoggerDecoration *> &decoration_list,
+                      const string separator = " | ");
     virtual string get_decoration() const override;
-    
-    private:
-        std::vector<const LoggerDecoration*> *decoration_list;
-        const string separator;
+
+  private:
+    std::vector<const LoggerDecoration *> *decoration_list;
+    const string separator;
 };
 
 struct PackDecoration : public LoggerDecoration {
-    PackDecoration(const LoggerDecoration &logger_decoration, const string begin = "[", const string end = "]");
+    PackDecoration(const LoggerDecoration &logger_decoration,
+                   const string begin = "[", const string end = "]");
     virtual string get_decoration() const override;
 
-    private:
-        const LoggerDecoration *logger_decoration;
-        const string begin;
-        const string end;
+  private:
+    const LoggerDecoration *logger_decoration;
+    const string begin;
+    const string end;
 };
 
 struct TimedLoggerDecoration : public LoggerDecoration {
@@ -41,11 +43,11 @@ struct TimedLoggerDecoration : public LoggerDecoration {
     TimedLoggerDecoration(TimedLoggerDecoration &other);
     virtual string get_decoration() const override;
 
-    private:
-        std::chrono::time_point<std::chrono::steady_clock> start_time;
+  private:
+    std::chrono::time_point<std::chrono::steady_clock> start_time;
 };
 
 struct HourLoggerDecoration : public LoggerDecoration {
     virtual string get_decoration() const override;
 };
-};
+}; // namespace simple_logger

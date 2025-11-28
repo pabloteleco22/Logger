@@ -14,12 +14,12 @@ struct DefaultFilter : public LevelFilter {
 };
 
 struct UserCustomFilter : public LevelFilter {
-    UserCustomFilter(std::function<bool(const Level &level)> custom_filter) :
-                                                            custom_filter{custom_filter} {}
+    UserCustomFilter(std::function<bool(const Level &level)> custom_filter)
+        : custom_filter{custom_filter} {}
 
     bool filter(const Level &level) const override;
 
-    private:
-        std::function<bool(const Level &level)> custom_filter;
+  private:
+    std::function<bool(const Level &level)> custom_filter;
 };
-};
+}; // namespace simple_logger

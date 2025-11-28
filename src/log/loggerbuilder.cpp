@@ -7,19 +7,22 @@ Logger *StandardLoggerBuilder::build() {
     return new StandardLogger{decoration, greeter, greeting_string};
 }
 
-StandardLoggerBuilder &StandardLoggerBuilder::set_decoration(const LoggerDecoration *decoration) {
+StandardLoggerBuilder &
+StandardLoggerBuilder::set_decoration(const LoggerDecoration *decoration) {
     this->decoration = decoration;
 
     return *this;
 }
 
-StandardLoggerBuilder &StandardLoggerBuilder::set_greeter(const Greeter *greeter) {
+StandardLoggerBuilder &
+StandardLoggerBuilder::set_greeter(const Greeter *greeter) {
     this->greeter = greeter;
 
     return *this;
 }
 
-StandardLoggerBuilder &StandardLoggerBuilder::set_greeting_string(const string &greeting_string) {
+StandardLoggerBuilder &
+StandardLoggerBuilder::set_greeting_string(const string &greeting_string) {
     this->greeting_string = greeting_string;
 
     return *this;
@@ -33,6 +36,7 @@ StandardLoggerBuilder &StandardLoggerBuilder::reset_config() {
     return *this;
 }
 
+/** StreamLoggerBuilder **/
 StreamLoggerBuilder::StreamLoggerBuilder(std::ostream *stream) {
     this->stream = stream;
 }
@@ -47,7 +51,8 @@ StreamLoggerBuilder &StreamLoggerBuilder::set_stream(std::ostream *stream) {
     return *this;
 }
 
-StreamLoggerBuilder &StreamLoggerBuilder::set_decoration(const LoggerDecoration *decoration) {
+StreamLoggerBuilder &
+StreamLoggerBuilder::set_decoration(const LoggerDecoration *decoration) {
     this->decoration = decoration;
 
     return *this;
@@ -59,7 +64,8 @@ StreamLoggerBuilder &StreamLoggerBuilder::set_greeter(const Greeter *greeter) {
     return *this;
 }
 
-StreamLoggerBuilder &StreamLoggerBuilder::set_greeting_string(const string &greeting_string) {
+StreamLoggerBuilder &
+StreamLoggerBuilder::set_greeting_string(const string &greeting_string) {
     this->greeting_string = greeting_string;
 
     return *this;

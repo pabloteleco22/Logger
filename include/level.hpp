@@ -6,9 +6,9 @@ using std::string;
 
 namespace simple_logger {
 struct Level {
-    Level() {};
+    Level(const unsigned short level_number = 0, const string color = "",
+          const string level_name = "");
     Level(const Level *other);
-    virtual ~Level() = 0;
     bool operator>=(const Level &other) const;
     bool operator>(const Level &other) const;
     bool operator<=(const Level &other) const;
@@ -18,84 +18,34 @@ struct Level {
     string get_color() const;
     string get_level_name() const;
 
-    protected:
-        unsigned short level_number{0};
-        string color{"\033[0m"};
-        string level_name{"Level"};
+  protected:
+    const unsigned short level_number{0};
+    const string color;
+    const string level_name;
 };
 
 struct Debug : public Level {
     using Level::Level;
-    using Level::operator>=;
-    using Level::operator>;
-    using Level::operator<=;
-    using Level::operator<;
-    using Level::operator==;
-    using Level::operator!=;
-    Debug() {
-        level_number = 51;
-        color = "\033[1;32m";
-        level_name = "Debug";
-    }
+    Debug() : Level(51, "\033[1;32m", "Debug") {}
 };
 
 struct Info : public Level {
     using Level::Level;
-    using Level::operator>=;
-    using Level::operator>;
-    using Level::operator<=;
-    using Level::operator<;
-    using Level::operator==;
-    using Level::operator!=;
-    Info() {
-        level_number = 102;
-        color = "\033[1;34m";
-        level_name = "Info";
-    }
+    Info() : Level(102, "\033[1;34m", "Info") {}
 };
 
 struct Warning : public Level {
     using Level::Level;
-    using Level::operator>=;
-    using Level::operator>;
-    using Level::operator<=;
-    using Level::operator<;
-    using Level::operator==;
-    using Level::operator!=;
-    Warning() {
-        level_number = 153;
-        color = "\033[1;33m";
-        level_name = "Warn";
-    }
+    Warning() : Level(153, "\033[1;33m", "Warn") {}
 };
 
 struct Error : public Level {
     using Level::Level;
-    using Level::operator>=;
-    using Level::operator>;
-    using Level::operator<=;
-    using Level::operator<;
-    using Level::operator==;
-    using Level::operator!=;
-    Error() {
-        level_number = 204;
-        color = "\033[1;31m";
-        level_name = "Error";
-    }
+    Error() : Level(204, "\033[1;31m", "Error") {}
 };
 
 struct Critical : public Level {
     using Level::Level;
-    using Level::operator>=;
-    using Level::operator>;
-    using Level::operator<=;
-    using Level::operator<;
-    using Level::operator==;
-    using Level::operator!=;
-    Critical() {
-        level_number = 229;
-        color = "\033[1;95m";
-        level_name = "Critical";
-    }
+    Critical() : Level(229, "\033[1;95m", "Critical") {}
 };
-};
+}; // namespace simple_logger

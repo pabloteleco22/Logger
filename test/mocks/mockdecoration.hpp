@@ -3,6 +3,6 @@
 #include <string>
 
 class MockLoggerDecoration : public simple_logger::LoggerDecoration {
-    public:
-        MOCK_METHOD(std::string, get_decoration, (), (const, override));
+  public:
+    MOCK_METHOD(std::string, get_decoration, (), (const, override));
 };

@@ -13,7 +13,8 @@ string ColorfulDefaultGreeter::greetings(const string &m) const {
 }
 
 /** UserCustomGreeter **/
-UserCustomGreeter::UserCustomGreeter(std::function<string(const string &)> custom_greetings) {
+UserCustomGreeter::UserCustomGreeter(
+    std::function<string(const string &)> custom_greetings) {
     this->custom_greetings = custom_greetings;
 }
 

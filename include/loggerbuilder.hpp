@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 #include "logger.hpp"
 
@@ -15,12 +15,12 @@ class StandardLoggerBuilder : public LoggerBuilder {
     const LoggerDecoration *decoration{&default_decoration};
     const Greeter *greeter{&default_greeter};
 
-    public:
-        Logger *build() override;
-        StandardLoggerBuilder &set_decoration(const LoggerDecoration *decoration);
-        StandardLoggerBuilder &set_greeter(const Greeter *greeter);
-        StandardLoggerBuilder &set_greeting_string(const string &greeting_string);
-        StandardLoggerBuilder &reset_config();
+  public:
+    Logger *build() override;
+    StandardLoggerBuilder &set_decoration(const LoggerDecoration *decoration);
+    StandardLoggerBuilder &set_greeter(const Greeter *greeter);
+    StandardLoggerBuilder &set_greeting_string(const string &greeting_string);
+    StandardLoggerBuilder &reset_config();
 };
 
 class StreamLoggerBuilder : public LoggerBuilder {
@@ -32,13 +32,13 @@ class StreamLoggerBuilder : public LoggerBuilder {
     const Greeter *greeter{&default_greeter};
     std::ostream *stream;
 
-    public:
-        StreamLoggerBuilder(std::ostream *stream);
-        Logger *build() override;
-        StreamLoggerBuilder &set_stream(std::ostream *stream);
-        StreamLoggerBuilder &set_decoration(const LoggerDecoration *decoration);
-        StreamLoggerBuilder &set_greeter(const Greeter *greeter);
-        StreamLoggerBuilder &set_greeting_string(const string &greeting_string);
-        StreamLoggerBuilder &reset_config();
+  public:
+    StreamLoggerBuilder(std::ostream *stream);
+    Logger *build() override;
+    StreamLoggerBuilder &set_stream(std::ostream *stream);
+    StreamLoggerBuilder &set_decoration(const LoggerDecoration *decoration);
+    StreamLoggerBuilder &set_greeter(const Greeter *greeter);
+    StreamLoggerBuilder &set_greeting_string(const string &greeting_string);
+    StreamLoggerBuilder &reset_config();
 };
-};
+}; // namespace simple_logger
