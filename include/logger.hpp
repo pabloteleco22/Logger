@@ -5,6 +5,7 @@
 #include "level.hpp"
 #include "levelfilter.hpp"
 
+#include <memory>
 #include <mutex>
 #include <sstream>
 
@@ -13,7 +14,7 @@ struct Logger {
     virtual ~Logger() {};
 
     virtual void write(const Level &level, const string &message) const = 0;
-    virtual void set_level_filter(const LevelFilter *level_filter) = 0;
+    virtual void set_level_filter(std::shared_ptr<LevelFilter> level_filter) = 0;
 
     class LoggerStreamResponse {
       private:
@@ -29,12 +30,12 @@ struct Logger {
             return *this;
         }
 
-        class End {};
+        class Flush {};
 
-        static End end;
+        static Flush end;
 
         LoggerStreamResponse &operator<<(std::ostream &(*func)(std::ostream &));
-        void operator<<(End);
+        void operator<<(Flush);
         void flush();
     };
 
@@ -42,24 +43,22 @@ struct Logger {
 };
 
 struct WriterLogger : public Logger {
-    WriterLogger(const WriterLogger &other);
-    WriterLogger(const LoggerDecoration *decoration);
-    virtual void set_level_filter(const LevelFilter *level_filter) override;
+    WriterLogger(WriterLogger &) = delete;
+    WriterLogger(std::shared_ptr<LoggerDecoration> decoration);
+    virtual void set_level_filter(std::shared_ptr<LevelFilter> level_filter) override;
 
   protected:
-    const LoggerDecoration *decoration;
-    const LevelFilter *level_filter;
+    std::shared_ptr<LoggerDecoration> decoration;
+    std::shared_ptr<LevelFilter> level_filter;
 };
 
 struct StreamLogger : public WriterLogger {
     StreamLogger() = delete;
-    StreamLogger(const StreamLogger &other);
-    StreamLogger(std::ostream *stream, const LoggerDecoration *decoration,
-                 const Greeter *greeter,
-                 const string &greeting_message = default_greeting_message);
+    StreamLogger(StreamLogger &) = delete;
+    StreamLogger(std::ostream *stream, std::shared_ptr<LoggerDecoration> decoration,
+                 const Greeter &greeter, const string &greeting_message = default_greeting_message);
 
-    virtual void write(const Level &level,
-                       const string &message) const override;
+    virtual void write(const Level &level, const string &message) const override;
 
     static const string default_greeting_message;
 
@@ -67,17 +66,16 @@ struct StreamLogger : public WriterLogger {
     std::ostream *stream;
 
   private:
-    void greetings(const string &g) const;
+    void greetings(const string &message) const;
 };
 
 struct StandardLogger : public StreamLogger {
-    StandardLogger(const StandardLogger &other);
+    StandardLogger(StandardLogger &) = delete;
 
-    StandardLogger(const LoggerDecoration *decoration, const Greeter *greeter,
+    StandardLogger(std::shared_ptr<LoggerDecoration> decoration, const Greeter &greeter,
                    const string &greeting_message = default_greeting_message);
 
-    virtual void write(const Level &level,
-                       const string &message) const override;
+    virtual void write(const Level &level, const string &message) const override;
 
     static const string default_greeting_message;
 };
@@ -86,29 +84,29 @@ struct ThreadLogger : public Logger {
     ThreadLogger() = delete;
     ThreadLogger(const ThreadLogger &other) = delete;
 
-    ThreadLogger(Logger *other);
+    ThreadLogger(std::shared_ptr<Logger> other);
 
     void write(const Level &level, const string &message) const override;
-    void set_level_filter(const LevelFilter *level_filter) override;
-    void set_logger(Logger *logger);
+    void set_level_filter(std::shared_ptr<LevelFilter> level_filter) override;
+    void set_logger(std::shared_ptr<Logger> logger);
 
   private:
     mutable std::mutex mut;
-    Logger *logger;
+    std::shared_ptr<Logger> logger;
 };
 
 struct BiLogger : public Logger {
     BiLogger() = delete;
     BiLogger(const BiLogger &other) = delete;
-    BiLogger(Logger *logger1, Logger *logger2);
+    BiLogger(std::shared_ptr<Logger> logger1, std::shared_ptr<Logger> logger2);
 
     void write(const Level &level, const string &message) const override;
-    void set_level_filter(const LevelFilter *level_filter) override;
-    void set_first_logger(Logger *logger);
-    void set_second_logger(Logger *logger);
+    void set_level_filter(std::shared_ptr<LevelFilter> level_filter) override;
+    void set_first_logger(std::shared_ptr<Logger> logger);
+    void set_second_logger(std::shared_ptr<Logger> logger);
 
   private:
-    Logger *logger1;
-    Logger *logger2;
+    std::shared_ptr<Logger> logger1;
+    std::shared_ptr<Logger> logger2;
 };
 }; // namespace simple_logger

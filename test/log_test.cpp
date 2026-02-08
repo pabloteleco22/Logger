@@ -9,7 +9,7 @@ using namespace simple_logger;
 using ::testing::_;
 using ::testing::NiceMock;
 
-Logger::LoggerStreamResponse::End end;
+Logger::LoggerStreamResponse::Flush flush;
 
 TEST(LogLevelTest, LevelHierarchy) {
     Debug debug;
@@ -30,7 +30,7 @@ TEST(LoggerStreamResponseTests, HappyPathWithEmptyMessage) {
 
     Logger::LoggerStreamResponse lsr = logger << level;
 
-    lsr << end;
+    lsr << flush;
 }
 
 TEST(LoggerStreamResponseTests, HappyPathWithNotEmptyMessage) {
@@ -42,7 +42,7 @@ TEST(LoggerStreamResponseTests, HappyPathWithNotEmptyMessage) {
     Logger::LoggerStreamResponse lsr = logger << level;
 
     lsr << "Hello" << 2 << std::endl << std::boolalpha << true;
-    lsr << end;
+    lsr << flush;
 }
 
 TEST(LoggerStreamResponseTests, DontWriteAnyMessageOnEndlReception) {
@@ -57,25 +57,25 @@ TEST(LoggerStreamResponseTests, DontWriteAnyMessageOnEndlReception) {
 }
 
 TEST(ThreadLoggerTests, CallLogger) {
-    MockLogger logger;
+    std::shared_ptr<MockLogger> logger{std::make_shared<MockLogger>()};
     Debug level;
 
-    EXPECT_CALL(logger, write(_, _)).Times(1);
+    EXPECT_CALL(*logger, write(_, _)).Times(1);
 
-    ThreadLogger threadLogger(&logger);
+    ThreadLogger threadLogger(logger);
 
-    threadLogger << level << end;
+    threadLogger << level << flush;
 }
 
 TEST(BiLoggerTests, CallTwoLoggers) {
-    MockLogger logger1;
-    MockLogger logger2;
+    std::shared_ptr<MockLogger> logger1{std::make_shared<MockLogger>()};
+    std::shared_ptr<MockLogger> logger2{std::make_shared<MockLogger>()};
     Debug level;
 
-    EXPECT_CALL(logger1, write(_, _)).Times(1);
-    EXPECT_CALL(logger2, write(_, _)).Times(1);
+    EXPECT_CALL(*logger1, write(_, _)).Times(1);
+    EXPECT_CALL(*logger2, write(_, _)).Times(1);
 
-    BiLogger biLogger(&logger1, &logger2);
+    BiLogger biLogger(logger1, logger2);
 
-    biLogger << level << end;
+    biLogger << level << flush;
 }

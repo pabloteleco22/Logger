@@ -1,3 +1,5 @@
+#include "levelfilter.hpp"
+#include <memory>
 #define EX4
 
 #ifdef EX1
@@ -75,8 +77,7 @@ int main() {
     HourLoggerDecoration hour_decoration;
 
     UserCustomGreeter custom_greeter{[&hour_decoration](const string &) {
-        string message{"Logger empezado a las " +
-                       hour_decoration.get_decoration()};
+        string message{"Logger empezado a las " + hour_decoration.get_decoration()};
 
         // Para eliminar el separador que imprime
         // hour_decoration al final
@@ -91,11 +92,9 @@ int main() {
     StandardLoggerBuilder standard_logger_builder;
     StreamLoggerBuilder stream_logger_builder{&out_stream};
 
-    standard_logger_builder.set_decoration(&hour_decoration)
-        .set_greeter(&custom_greeter);
+    standard_logger_builder.set_decoration(&hour_decoration).set_greeter(&custom_greeter);
 
-    stream_logger_builder.set_decoration(&time_decoration)
-        .set_greeter(&custom_greeter);
+    stream_logger_builder.set_decoration(&time_decoration).set_greeter(&custom_greeter);
 
     Logger *standard_logger{standard_logger_builder.build()};
     Logger *stream_logger{stream_logger_builder.build()};
@@ -123,20 +122,19 @@ int main() {
     Error error;
 
     StandardLoggerBuilder logger_builder;
-    Logger *standard_logger{logger_builder.build()};
+    std::unique_ptr<Logger> standard_logger{logger_builder.build()};
 
-    UserCustomFilter custom_filter{[&debug, &warning](const Level &level) {
-        return ((level == debug) || (level >= warning));
-    }};
+    std::shared_ptr<UserCustomFilter> custom_filter{
+        std::make_shared<UserCustomFilter>([&debug, &warning](const Level &level) {
+            return ((level == debug) || (level >= warning));
+        })};
 
-    standard_logger->set_level_filter(&custom_filter);
+    standard_logger->set_level_filter(custom_filter);
 
     standard_logger->write(debug, "Mensaje de depuración");
     standard_logger->write(info, "Mensaje de información");
     standard_logger->write(warning, "Mensaje de aviso");
     standard_logger->write(error, "Mensaje de error");
-
-    delete standard_logger;
 
     return 0;
 }

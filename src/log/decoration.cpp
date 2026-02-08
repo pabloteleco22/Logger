@@ -8,8 +8,7 @@ using namespace simple_logger;
 string VoidLoggerDecoration::get_decoration() const { return ""; }
 
 DecorationBundler::DecorationBundler(
-    std::vector<const LoggerDecoration *> &decoration_list,
-    const string separator)
+    std::vector<std::shared_ptr<LoggerDecoration>> &decoration_list, const string separator)
     : separator{separator} {
     this->decoration_list = &decoration_list;
 }
@@ -31,8 +30,8 @@ string DecorationBundler::get_decoration() const {
     return decoration;
 }
 
-PackDecoration::PackDecoration(const LoggerDecoration &logger_decoration,
-                               const string begin, const string end)
+PackDecoration::PackDecoration(const LoggerDecoration &logger_decoration, const string begin,
+                               const string end)
     : logger_decoration{&logger_decoration}, begin{begin}, end{end} {}
 
 string PackDecoration::get_decoration() const {
@@ -44,15 +43,13 @@ TimedLoggerDecoration::TimedLoggerDecoration() : LoggerDecoration() {
     start_time = std::chrono::steady_clock::now();
 }
 
-TimedLoggerDecoration::TimedLoggerDecoration(TimedLoggerDecoration &other)
-    : LoggerDecoration() {
+TimedLoggerDecoration::TimedLoggerDecoration(TimedLoggerDecoration &other) : LoggerDecoration() {
     start_time = other.start_time;
 }
 
 string TimedLoggerDecoration::get_decoration() const {
     std::ostringstream os;
-    os << std::chrono::duration<double, std::milli>(
-              std::chrono::steady_clock::now() - start_time)
+    os << std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start_time)
               .count();
 
     return os.str();
@@ -62,8 +59,7 @@ string TimedLoggerDecoration::get_decoration() const {
 string HourLoggerDecoration::get_decoration() const {
     std::ostringstream os;
 
-    std::chrono::time_point<std::chrono::system_clock> now =
-        std::chrono::system_clock::now();
+    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
     std::time_t t_now = std::chrono::system_clock::to_time_t(now);
     os << std::put_time(std::localtime(&t_now), "%T");
 

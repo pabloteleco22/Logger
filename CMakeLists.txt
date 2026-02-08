@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(logger)
-
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+project(logger)
 
 # Explicitly opt in to modern CMake behaviors to avoid warnings
 cmake_policy(SET CMP0135 NEW)
@@ -31,7 +31,7 @@ target_link_libraries(logger_example_tfg Logger)
 include(FetchContent)
 FetchContent_Declare(
   googletest
-  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+  URL https://github.com/google/googletest/releases/download/v1.17.0/googletest-1.17.0.tar.gz 
 )
 
 set(gtest_force_shared_crt
