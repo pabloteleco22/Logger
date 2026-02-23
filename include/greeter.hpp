@@ -10,8 +10,12 @@ struct Greeter {
     virtual string greetings(const string &m) const = 0;
 };
 
-struct DefaultGreeter : public Greeter {
+struct VoidGreeter : public Greeter {
     virtual string greetings(const string &m) const override;
+};
+
+struct DefaultGreeter : public Greeter {
+    virtual string greetings(const string &) const override;
 };
 
 struct ColorfulDefaultGreeter : public Greeter {

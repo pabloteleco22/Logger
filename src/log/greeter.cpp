@@ -3,9 +3,10 @@
 using namespace simple_logger;
 
 /** DefaultGreeter **/
-string DefaultGreeter::greetings(const string &m) const {
-    return "[Greetings] " + m;
-}
+string DefaultGreeter::greetings(const string &m) const { return "[Greetings] " + m; }
+
+/** VoidGreeter **/
+string VoidGreeter::greetings(const string &) const { return ""; }
 
 /** ColorfulDefaultGreeter **/
 string ColorfulDefaultGreeter::greetings(const string &m) const {
@@ -13,11 +14,8 @@ string ColorfulDefaultGreeter::greetings(const string &m) const {
 }
 
 /** UserCustomGreeter **/
-UserCustomGreeter::UserCustomGreeter(
-    std::function<string(const string &)> custom_greetings) {
+UserCustomGreeter::UserCustomGreeter(std::function<string(const string &)> custom_greetings) {
     this->custom_greetings = custom_greetings;
 }
 
-string UserCustomGreeter::greetings(const string &m) const {
-    return custom_greetings(m);
-}
+string UserCustomGreeter::greetings(const string &m) const { return custom_greetings(m); }
